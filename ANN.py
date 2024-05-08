@@ -908,9 +908,10 @@ def generateActionsForSingleTimeslotWithANN_SingleBuildingOptScenario (indexOfBu
 
                 # Assign values to the non-adjustable state variables (parameters)
                 state_cop_heat_pump_space_heating = cop_heatPump_SpaceHeating [state_indexCurrentTimeslot]
-                state_PVGeneration = list_df_buildingData_BT4 [indexOfBuildingsOverall_BT4 [0] - 1 - building_index_increment_simulation] ['PV [nominal]'] [ state_indexCurrentTimeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings (indexOfBuildingsOverall_BT4 [0] - 1 - building_index_increment_simulation)
-                state_heatDemand  = list_df_buildingData_BT4 [indexOfBuildingsOverall_BT4 [0] - 1-  building_index_increment_simulation] ['Space Heating [W]'] [ state_indexCurrentTimeslot + 1 ]
-                state_electricityDemand  = list_df_buildingData_BT4 [indexOfBuildingsOverall_BT4 [0] - 1 -  building_index_increment_simulation] ['Electricity [W]'] [ state_indexCurrentTimeslot + 1 ]
+                helpValueTemp = indexOfBuildingsOverall_BT4 [0] - 1 - building_index_increment_simulation
+                state_PVGeneration = list_df_buildingData_BT4 [0] ['PV [nominal]'] [ state_indexCurrentTimeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings (0)
+                state_heatDemand  = list_df_buildingData_BT4 [0] ['Space Heating [W]'] [ state_indexCurrentTimeslot + 1 ]
+                state_electricityDemand  = list_df_buildingData_BT4 [0] ['Electricity [W]'] [ state_indexCurrentTimeslot + 1 ]
                 state_outsideTemperature = df_outsideTemperatureData ['Temperature [C]'] [ state_indexCurrentTimeslot + 1 ]
                 state_priceForElectricity_CentsPerkWh = df_priceData ['Price [Cent/kWh]'] [ state_indexCurrentTimeslot + 1 ]
 
@@ -1836,10 +1837,6 @@ def generateActionsForMutipleTimeslotWithANN_SingleBuildingOptScenario (indexOfB
 
 
             return outputVector_chargingBAT, outputVector_disChargingBAT
-
-
-
-
 
 
 def trainSupervisedML_SingleTimeslot_SingleBuildingOptScenario (trainingData, objective, useNormalizedData, useStandardizedData, usedMLMethod, pathForTheTrainedModels, practiseModeWithTestPredictions, testWeeksPrediction, help_string_features_use, building_index_increment_training, building_index_increment_simulation):

@@ -1,8 +1,10 @@
-# -*- coding: utf-8 -*-
 """
-Created on Mon Mar 15 17:26:50 2021
+This file contains methods for simulating either a whole day or just one single time step. The different methods include an additional correcting controller
+that can adjust the heating or charging actions of the flexible devices if a constraint violation is about to occur of if discomfort is about to occur.
 
-@author: wi9632
+Price, temperature and demand data for the buildings (space heating, electricity) are read from csv files with a 1-minute resolution
+
+The results (including resulting load profiles) are both stored on file (specified by the function argument "pathForCreatingTheResultData") and returned by the functions
 """
 import SetUpScenarios
 import numpy as np
@@ -13,7 +15,7 @@ import os
 
 
 
-# Method for simulating variable number of weeks with an additional controller if dersired.
+# Method for simulating variable number of weeks with an additional controller if dersired. . This controller adjusts the actions if discomfort is about to occur.
 # Input: boolean overruleActions, 3-dim-arrays inputVector_BT1_heatGenerationCoefficientSpaceHeating [index_BT1, index_timeslot] etc.
 
 def simulateWeeks_WithAddtionalController_Schedule(indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, indexOfBuildingsOverall_BT3, indexOfBuildingsOverall_BT4, indexOfBuildingsOverall_BT5, currentweek, overruleActions, inputVector_BT1_heatGenerationCoefficientSpaceHeating, inputVector_BT1_heatGenerationCoefficientDHW, inputVector_BT1_chargingPowerEV, inputVector_BT2_heatGenerationCoefficientSpaceHeating, inputVector_BT2_heatGenerationCoefficientDHW, inputVector_BT3_chargingPowerEV, inputVector_BT4_heatGenerationCoefficientSpaceHeating, inputVector_BT5_chargingPowerBAT, inputVector_BT5_disChargingPowerBAT, pathForCreatingTheResultData):
@@ -3486,7 +3488,6 @@ def simulateWeeks_WithAddtionalController_Schedule(indexOfBuildingsOverall_BT1, 
 #Simulation method for the conventional control strategy
 
 
-
 def simulateWeeks_ConventionalControl(indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, indexOfBuildingsOverall_BT3, indexOfBuildingsOverall_BT4, indexOfBuildingsOverall_BT5, currentweek, pathForCreatingTheResultData, usePriceStorageControl):
 
 
@@ -6542,17 +6543,9 @@ def simulateTimeSlot_WithAddtionalController_BT4 (overruleActions, action_SpaceH
 
     action_SpaceHeating_NotOverruled = action_SpaceHeating
 
-    '''
-    print("")
-    print("------------------------------------------")
-    print("")
-    print("Beginning IC; Timeslot: ", index_timeslot + 1)
-    print("")
-    print("helpCountNumberOfStarts_Combined: ", helpCountNumberOfStarts_Combined)
-    '''
+
+
     #Calculate the simulation steps
-
-
 
     if helpStartedHeatingHeatPump == True and helpCounterNumberOfRunningSlots_Combined >=Run_Simulations.minimalRunTimeHeatPump:
         helpStartedHeatingHeatPump = False
@@ -6898,33 +6891,4 @@ def simulateTimeSlot_WithAddtionalController_BT5 (overruleActions,  action_charg
 
 
     return action_chargingPowerBat,action_disChargingPowerBat, state_SOCofBAT,  helpCurrentPeakLoad
-
-
-
-
-
-#'''
-
-
-
-
-
-
-if __name__ == "__main__":
-    print("In IC Simulation")
-
-
-    if Run_Simulations.run_simulateWeeks_WithAddtionalController_Schedule == True:
-        useInternalControllerToOverruleActions = Run_Simulations.useInternalControllerToOverruleActions_simulateWeeks_WithAddtionalController_Schedule
-        inputVector_BT1_heatGenerationCoefficientSpaceHeating, inputVector_BT1_heatGenerationCoefficientDHW, inputVector_BT1_chargingPowerEV, inputVector_BT2_heatGenerationCoefficientSpaceHeating, inputVector_BT2_heatGenerationCoefficientDHW, inputVector_BT3_chargingPowerEV, inputVector_BT4_heatGenerationCoefficientSpaceHeating = ANN.generateActionsForAllTimeslotWithANN()
-        outputVector_BT1_heatGenerationCoefficientSpaceHeating_corrected, outputVector_BT1_heatGenerationCoefficientDHW_corrected, outputVector_BT1_chargingPowerEV_corrected, outputVector_BT2_heatGenerationCoefficientSpaceHeating_corrected, outputVector_BT2_heatGenerationCoefficientDHW_corrected, outputVector_BT3_chargingPowerEV_corrected, outputVector_BT4_heatGenerationCoefficientSpaceHeating_corrected = simulateWeeks_WithAddtionalController_Schedule (useInternalControllerToOverruleActions, inputVector_BT1_heatGenerationCoefficientSpaceHeating, inputVector_BT1_heatGenerationCoefficientDHW, inputVector_BT1_chargingPowerEV, inputVector_BT2_heatGenerationCoefficientSpaceHeating, inputVector_BT2_heatGenerationCoefficientDHW, inputVector_BT3_chargingPowerEV, inputVector_BT4_heatGenerationCoefficientSpaceHeating )
-        print("End of method: simulateWeeks_WithAddtionalController_Schedule()")
-
-    if Run_Simulations.run_simulateWeeks_ConventionalControl == True:
-        outputVector_BT1_heatGenerationCoefficientSpaceHeating_Conventional, outputVector_BT1_heatGenerationCoefficientDHW_Conventional, outputVector_BT1_chargingPowerEV_Conventional, outputVector_BT2_heatGenerationCoefficientSpaceHeating_Conventional, outputVector_BT2_heatGenerationCoefficientDHW_Conventional, outputVector_BT3_chargingPowerEV_Conventional, outputVector_BT4_heatGenerationCoefficientSpaceHeating_Conventional = simulateWeeks_ConventionalControl()
-        print("End of method: simulateWeeks_ConventionalControl()")
-
-
-
-
 

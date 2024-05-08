@@ -1,18 +1,35 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri May 21 09:49:38 2021
+Centralized optimization problem for mutiple buildings implemented with the package pyomo
+7 building types:
+    - Building Type 1: single-familiy building with modulating air-source heat pump (mHP) and electric vehicle (EV) --> --> not used in Paper
+    - Building Type 2: single-familiy building with modulating air-source heat pump (mHP)  --> used in Paper as BT2
+    - Builidng Type 3: single-familiy building with electric vehicle  --> not used in Paper
+    - Building Type 4: multi-familiy building with modulating air-source heat pump (mHP) only for space heating (and not domestic hot water)  --> used in Paper
+    - Building Type 5: Building with battery  --> not used in Paper
 
-Centralized optimization problem for mutiple buildings
-3 building types:
-    - Building Type 1: single-familiy building with modulating air-source heat pump (mHP) and electric vehicle (EV)
-    - Building Type 2: single-familiy building with modulating air-source heat pump (mHP) 
-    - Builidng Type 3: single-familiy building with electric vehicle
-    - Building Type 4: multi-familiy building with modulating air-source heat pump (mHP) only for space heating (and not domestic hot water)
-    - Building Type 5: Building with battery --> Not tested
+Price, temperature and demand data for the buildings (space heating, domestic hot water, electricity) are read from csv files with a 1-minute resolution
+
+The results (including resulting load profiles) are both stored on file (path is specified by the variable "folderPath" in the function) and returned by the function (at the end of this script)
 """
 
-def optimizeOneWeek(indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, indexOfBuildingsOverall_BT3, indexOfBuildingsOverall_BT4, indexOfBuildingsOverall_BT5, currentDay):
-    import SetUpScenarios 
+def optimizeOneWeek(indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, indexOfBuildingsOverall_BT3, indexOfBuildingsOverall_BT4, indexOfBuildingsOverall_BT5, currentWeek):
+    """
+    This method uses as solver to solve the optimization problem of a residential area with different building types for one week
+
+    Args:
+        indexOfBuildingsOverall_BT1 (list): List of buildings for type 1.
+        indexOfBuildingsOverall_BT2 (list): List of buildings for type 2.
+        indexOfBuildingsOverall_BT3 (list): List of buildings for type 3.
+        indexOfBuildingsOverall_BT4 (list): List of buildings for type 4.
+        indexOfBuildingsOverall_BT5 (list): List of buildings for type 5.
+        currentWeek (int): The current day in the simulation
+
+    """
+
+
+
+    import SetUpScenarios
     import Run_Simulations
     import pyomo.environ as pyo
     import pandas as pd
@@ -68,7 +85,7 @@ def optimizeOneWeek(indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, in
     
     
     #Reading of the price data
-    df_priceData_original = pd.read_csv('C:/Users/wi9632/Desktop/Daten/DSM/Price_1Minute_Weeks/' + SetUpScenarios.typeOfPriceData +'/Price_' + SetUpScenarios.typeOfPriceData +'_1Minute_Week' +  str(currentDay) + '.csv', sep =";")
+    df_priceData_original = pd.read_csv('C:/Users/wi9632/Desktop/Daten/DSM/Price_1Minute_Weeks/' + SetUpScenarios.typeOfPriceData +'/Price_' + SetUpScenarios.typeOfPriceData +'_1Minute_Week' + str(currentWeek) + '.csv', sep =";")
     df_priceData_original['Time'] = pd.to_datetime(df_priceData_original['Time'], format = '%d.%m.%Y %H:%M')
     df_priceData = df_priceData_original.set_index('Time').resample(str(SetUpScenarios.timeResolution_InMinutes) +'Min').mean()
     arrayTimeSlots = [i for i in range (1,SetUpScenarios.numberOfTimeSlotsPerWeek + 1)]
@@ -76,7 +93,7 @@ def optimizeOneWeek(indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, in
     df_priceData = df_priceData.set_index('Timeslot')
     
     #Reading outside temperature data
-    df_outsideTemperatureData_original = pd.read_csv('C:/Users/wi9632/Desktop/Daten/DSM/Outside_Temperature_1Minute_Weeks/Outside_Temperature_1Minute_Week' +  str(currentDay) + '.csv', sep =";")
+    df_outsideTemperatureData_original = pd.read_csv('C:/Users/wi9632/Desktop/Daten/DSM/Outside_Temperature_1Minute_Weeks/Outside_Temperature_1Minute_Week' + str(currentWeek) + '.csv', sep =";")
     df_outsideTemperatureData_original['Time'] = pd.to_datetime(df_outsideTemperatureData_original['Time'], format = '%d.%m.%Y %H:%M')
     df_outsideTemperatureData = df_outsideTemperatureData_original.set_index('Time').resample(str(SetUpScenarios.timeResolution_InMinutes) +'Min').mean()
     df_outsideTemperatureData['Timeslot'] = arrayTimeSlots
@@ -96,11 +113,11 @@ def optimizeOneWeek(indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, in
     
     
     #Reading of the building data
-    list_df_buildingData_BT1_original= [pd.read_csv("C:/Users/wi9632/Desktop/Daten/DSM/BT1_mHP_EV_SFH_1Minute_Days/HH" + str(index) + "/HH" + str(index) + "_Day" + str(currentDay) +".csv", sep =";") for index in indexOfBuildingsOverall_BT1]
-    list_df_buildingData_BT2_original= [pd.read_csv("C:/Users/wi9632/Desktop/Daten/DSM/BT2_mHP_SFH_1Minute_Days/HH" + str(index) + "/HH" + str(index) + "_Day" + str(currentDay) +".csv", sep =";") for index in indexOfBuildingsOverall_BT2]
-    list_df_buildingData_BT3_original= [pd.read_csv("C:/Users/wi9632/Desktop/Daten/DSM/BT3_EV_SFH_1Minute_Days/HH" + str(index) + "/HH" + str(index) + "_Day" + str(currentDay) +".csv", sep =";") for index in indexOfBuildingsOverall_BT3]
-    list_df_buildingData_BT4_original= [pd.read_csv("C:/Users/wi9632/Desktop/Daten/DSM/BT4_mHP_MFH_1Minute_Weeks/HH" + str(index) + "/HH" + str(index) + "_Week" + str(currentDay) +".csv", sep =";") for index in indexOfBuildingsOverall_BT4]
-    list_df_buildingData_BT5_original= [pd.read_csv("C:/Users/wi9632/Desktop/Daten/DSM/BT5_BAT_SFH_1Minute_Days/HH" + str(index) + "/HH" + str(index) + "_Day" + str(currentDay) +".csv", sep =";") for index in indexOfBuildingsOverall_BT5]
+    list_df_buildingData_BT1_original= [pd.read_csv("C:/Users/wi9632/Desktop/Daten/DSM/BT1_mHP_EV_SFH_1Minute_Days/HH" + str(index) + "/HH" + str(index) + "_Day" + str(currentWeek) + ".csv", sep =";") for index in indexOfBuildingsOverall_BT1]
+    list_df_buildingData_BT2_original= [pd.read_csv("C:/Users/wi9632/Desktop/Daten/DSM/BT2_mHP_SFH_1Minute_Days/HH" + str(index) + "/HH" + str(index) + "_Day" + str(currentWeek) + ".csv", sep =";") for index in indexOfBuildingsOverall_BT2]
+    list_df_buildingData_BT3_original= [pd.read_csv("C:/Users/wi9632/Desktop/Daten/DSM/BT3_EV_SFH_1Minute_Days/HH" + str(index) + "/HH" + str(index) + "_Day" + str(currentWeek) + ".csv", sep =";") for index in indexOfBuildingsOverall_BT3]
+    list_df_buildingData_BT4_original= [pd.read_csv("C:/Users/wi9632/Desktop/Daten/DSM/BT4_mHP_MFH_1Minute_Weeks/HH" + str(index) + "/HH" + str(index) + "_Week" + str(currentWeek) + ".csv", sep =";") for index in indexOfBuildingsOverall_BT4]
+    list_df_buildingData_BT5_original= [pd.read_csv("C:/Users/wi9632/Desktop/Daten/DSM/BT5_BAT_SFH_1Minute_Days/HH" + str(index) + "/HH" + str(index) + "_Day" + str(currentWeek) + ".csv", sep =";") for index in indexOfBuildingsOverall_BT5]
 
 
     #Rename column 'Demand Electricity [W]' to 'Electricity [W]' if it exists
@@ -161,7 +178,7 @@ def optimizeOneWeek(indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, in
     if SetUpScenarios.numberOfBuildings_BT1 >=1:
         #Create dataframes by using pandas series 
    
-        list_windProfileNominal_BT1 = [SetUpScenarios.calculateAssignedWindPowerNominalPerBuilding (currentDay,index_BT1) for index_BT1 in range(0, SetUpScenarios.numberOfBuildings_BT1)]
+        list_windProfileNominal_BT1 = [SetUpScenarios.calculateAssignedWindPowerNominalPerBuilding (currentWeek, index_BT1) for index_BT1 in range(0, SetUpScenarios.numberOfBuildings_BT1)]
         list_df_windPowerAssignedNominalPerBuilding_BT1 = [pd.DataFrame({'Timeslot': list_df_buildingData_BT1 [i].index, 'Wind [nominal]':list_windProfileNominal_BT1[i] }) for i in range (0, SetUpScenarios.numberOfBuildings_BT1)]
 
         for i in range (0, len(list_df_windPowerAssignedNominalPerBuilding_BT1)):
@@ -649,7 +666,7 @@ def optimizeOneWeek(indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, in
     if SetUpScenarios.numberOfBuildings_BT2 >=1:
         #Create dataframes by using pandas series 
    
-        list_windProfileNominal_BT2 = [SetUpScenarios.calculateAssignedWindPowerNominalPerBuilding (currentDay,SetUpScenarios.numberOfBuildings_BT1 + index_BT2) for index_BT2 in range(0, SetUpScenarios.numberOfBuildings_BT2)]
+        list_windProfileNominal_BT2 = [SetUpScenarios.calculateAssignedWindPowerNominalPerBuilding (currentWeek, SetUpScenarios.numberOfBuildings_BT1 + index_BT2) for index_BT2 in range(0, SetUpScenarios.numberOfBuildings_BT2)]
         list_df_windPowerAssignedNominalPerBuilding_BT2 = [pd.DataFrame({'Timeslot': list_df_buildingData_BT2 [i].index, 'Wind [nominal]':list_windProfileNominal_BT2[i] }) for i in range (0, SetUpScenarios.numberOfBuildings_BT2)]
 
         for i in range (0, len(list_df_windPowerAssignedNominalPerBuilding_BT2)):
@@ -1057,7 +1074,7 @@ def optimizeOneWeek(indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, in
     if SetUpScenarios.numberOfBuildings_BT3 >=1:
         #Create dataframes by using pandas series 
    
-        list_windProfileNominal_BT3 = [SetUpScenarios.calculateAssignedWindPowerNominalPerBuilding (currentDay,SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 +index_BT3) for index_BT3 in range(0, SetUpScenarios.numberOfBuildings_BT3)]
+        list_windProfileNominal_BT3 = [SetUpScenarios.calculateAssignedWindPowerNominalPerBuilding (currentWeek, SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + index_BT3) for index_BT3 in range(0, SetUpScenarios.numberOfBuildings_BT3)]
         list_df_windPowerAssignedNominalPerBuilding_BT3 = [pd.DataFrame({'Timeslot': list_df_buildingData_BT3 [i].index, 'Wind [nominal]':list_windProfileNominal_BT3[i] }) for i in range (0, SetUpScenarios.numberOfBuildings_BT3)]
 
         for i in range (0, len(list_df_windPowerAssignedNominalPerBuilding_BT3)):
@@ -1248,7 +1265,7 @@ def optimizeOneWeek(indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, in
     if SetUpScenarios.numberOfBuildings_BT4 >=1:
         #Create dataframes by using pandas series 
    
-        list_windProfileNominal_BT4 = [SetUpScenarios.calculateAssignedWindPowerNominalPerBuilding (currentDay,SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + SetUpScenarios.numberOfBuildings_BT3 + index_BT4) for index_BT4 in range(0, SetUpScenarios.numberOfBuildings_BT4)]
+        list_windProfileNominal_BT4 = [SetUpScenarios.calculateAssignedWindPowerNominalPerBuilding (currentWeek, SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + SetUpScenarios.numberOfBuildings_BT3 + index_BT4) for index_BT4 in range(0, SetUpScenarios.numberOfBuildings_BT4)]
         list_df_windPowerAssignedNominalPerBuilding_BT4 = [pd.DataFrame({'Timeslot': list_df_buildingData_BT4 [i].index, 'Wind [nominal]':list_windProfileNominal_BT4[i] }) for i in range (0, SetUpScenarios.numberOfBuildings_BT4)]
 
         for i in range (0, len(list_df_windPowerAssignedNominalPerBuilding_BT4)):
@@ -1483,7 +1500,7 @@ def optimizeOneWeek(indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, in
     if SetUpScenarios.numberOfBuildings_BT5 >=1:
         #Create dataframes by using pandas series 
    
-        list_windProfileNominal_BT5 = [SetUpScenarios.calculateAssignedWindPowerNominalPerBuilding (currentDay,SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 +index_BT5) for index_BT5 in range(0, SetUpScenarios.numberOfBuildings_BT5)]
+        list_windProfileNominal_BT5 = [SetUpScenarios.calculateAssignedWindPowerNominalPerBuilding (currentWeek, SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + index_BT5) for index_BT5 in range(0, SetUpScenarios.numberOfBuildings_BT5)]
         list_df_windPowerAssignedNominalPerBuilding_BT5 = [pd.DataFrame({'Timeslot': list_df_buildingData_BT5 [i].index, 'Wind [nominal]':list_windProfileNominal_BT5[i] }) for i in range (0, SetUpScenarios.numberOfBuildings_BT5)]
 
         for i in range (0, len(list_df_windPowerAssignedNominalPerBuilding_BT5)):

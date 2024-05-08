@@ -136,7 +136,7 @@ if timeResolution_InMinutes ==60:
 
 #Bosch Compress 6800i AW  series
 electricalPower_HP = 3000  # Unit: [W]
-electricalPower_HP_BT4_MFH = 3 * 3000  # Unit: [W]
+electricalPower_HP_BT4_MFH = 6 * 3000  # Unit: [W]
 COP_CalculationValue1_TemperatureDifference  = 28 # Unit: [K]
 COP_CalculationValue1_COP = 4.8   # Unit: dimensionless
 COP_CalculationValue2_TemperatureDifference = 33  # Unit: [K]
@@ -183,7 +183,7 @@ chargingPowerMaximal_BAT  = 3.4 * 1000  # Unit: [W]=[kW]*[W/kW]
 #Solver options
 solverOption_relativeGap_normalDecentral= 1.0 / 100 # Unit: [%/100] = [%] / [100]
 solverOption_timeLimit_normalDecentral = 5 * 60 # Unit: [seconds] =[min]*[seconds/min]
-solverOption_relativeGap_Central = 0.1 / 100 # Unit: [%/100] = [%] / [100]
+solverOption_relativeGap_Central = 0.0001 / 100 # Unit: [%/100] = [%] / [100]
 solverOption_timeLimit_Central = 15 * 60 # Unit: [seconds] =[min]*[seconds/min]
 
 
