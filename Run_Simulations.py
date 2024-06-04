@@ -13,25 +13,26 @@ from datetime import datetime
 #Set up
 
 # Specify the used optimization methods
-useDecentralizedOptimization = False
-useReinforcementLearning = False
-generateTrainingData = False
+
 
 useCentralizedOptimization = True
 useConventionalControl = True
 usePriceStorageControl_BT4 = True
-print_results_of_different_methods = False
 
-useSupervisedLearning = False
+
+useSupervisedLearning = True
 used_trained_models_in_simulations_supervised_learning = False
+print_results_of_different_methods = True
 
 building_type_for_supervised_learning = "kWh25"
-#help_string_features_use = 'COP (Space Heating),numberOfStarts_HP,HP_isRunning,PriceFactor,StorageFactor,AverageTemperature'
 help_string_features_use = 'COP (Space Heating),numberOfStarts_HP,HP_isRunning,PriceFactor,StorageFactor,AverageTemperature'
 
+
+numberOfWeeksForEvaluation = 2
+
+
 # Define parameters for ML
-numberOfWeeksForEvaluation = 26
-useChronologicalOrderForFirstTestWeek = True
+useChronologicalOrderForFirstTestWeek = True  #specifies is the test weeks for the evaluation are choosen randomly or in a chronological order (week 1, 2, 3, 4 etc. of the year)
 number_of_iterations_ML_method = 4
 
 
@@ -47,25 +48,15 @@ building_index_increment_simulation = 0
 
 
 
-#Objectives and scenarios
+#Objectives and scenarios (in this paper, only the goal of minimizing Costs is considered)
 
 optimizationGoal_minimizeSurplusEnergy = False
 optimizationGoal_minimizePeakLoad = False
 optimizationGoal_minimizeCosts = True
 
-useCorrectionsAtTheEndOfWeek = False
 
 
-# Choose internal Controller
-run_simulateWeeks_NoAddtionalController_ANNSchedule = False
-run_simulateWeeks_WithAddtionalController_Schedule =True
-useInternalControllerToOverruleActions_simulateWeeks_WithAddtionalController_Schedule = True
-
-useInternalControllerForRL = True
-
-
-
-#Maximal starting times for the heating devices
+#Maximal starting times for the heating devices within one week
 considerMaximumNumberOfStartsHP_Combined = True
 considerMaxiumNumberOfStartsHP_Individual = False
 considerMaxiumNumberOfStartsHP_MFH_Individual = True
@@ -77,8 +68,10 @@ maximumNumberOfStarts_Individual = 4  * 7
 minimalRunTimeHeatPump = 0
 timeslotsForCorrectingActionsBeforeTheAndOfTheWeek = 0
 numberOfTimeSlotHeatingWithMinModulationDegreeWhenStartingToHeat =0
+useCorrectionsAtTheEndOfWeek = False  #specifies if the internal controller adjusts the temperature values at the end of the optimization horizon such that they are equal to the starting temperatures. This is done by forcing the heat pump to heat (in case of low temperatures) or to stop heating (in case of high temperatures)
 
-#Adjust parameters to the time resolution
+
+#Adjust parameters to the time resolution that prevent the internal controller to start and stop the heat pump to frequently
 if SetUpScenarios.timeResolution_InMinutes ==1:
     minimalRunTimeHeatPump = 30
     timeslotsForCorrectingActionsBeforeTheAndOfTheWeek = 0
@@ -112,9 +105,6 @@ if useCorrectionsAtTheEndOfWeek ==False:
 minimalModulationDegreeOfTheMaximumPowerInCaseOfANecessaryCorrection = 0.7 # Should be between 0.5 and 1. Only quantifies the minimal degree. If no new peak is created by this action in the simulation , the value will be higher
 
 
-differntWeigthsForTheOptimization_2Objectives = [(1.0, 0.0), (0.0, 1.0), (0.75, 0.25), (0.5, 0.5), (0.25, 0.75)]
-differntWeigthsForTheOptimization_3Objectives = [(1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0), (0.33, 0.33, 0.33),
-                                                 (0.5, 0.25, 0.25), (0.25, 0.5, 0.25), (0.25, 0.25, 0.5)]
 
 
 #Values are determined below
@@ -155,74 +145,12 @@ OPT_OBJECTIVE_MIN_COSTS = 'Min_Costs'
 numberOfBuildingDataOverall = 20
 
 
+weeksOfTheYearForSimulation_Testing = [ 5] #This array should just have the length 1; the actucal values do not matter
+
+
 
 
 ###################################################################################################################################################################################################
-
-def generateTrainingDataForML():
-    print("Generate Training Data")
-    import pandas as pd
-
-    for buildingIndex in range (1, 21):
-        WeeksOfTheYearForSimulation_Training_Period1 = [i for i in range (1, 13)]
-        WeeksOfTheYearForSimulation_Training_Period2 = [i for i in range (39, 53)]
-
-
-        pathForCreatingTheResultData_Centralized = folderPath_WholeSimulation + "/Centralized/Min_Costs_Scaled_PV_"+ str(SetUpScenarios.averagePVPeak) + "_kWp_" +  str(SetUpScenarios.timeResolution_InMinutes) + "_Min/BT4_HH" + str(buildingIndex) + "/"
-
-        indexOfBuildingsOverall_BT1 = [i for i in range (1, SetUpScenarios.numberOfBuildings_BT1 + 1)]
-        indexOfBuildingsOverall_BT2 = [i for i in range (1, SetUpScenarios.numberOfBuildings_BT2 + 1)]
-        indexOfBuildingsOverall_BT3 = [i for i in range (1, SetUpScenarios.numberOfBuildings_BT3 + 1)]
-        indexOfBuildingsOverall_BT4 = [buildingIndex]
-        indexOfBuildingsOverall_BT5 =  [i for i in range (1, SetUpScenarios.numberOfBuildings_BT5 + 1)]
-
-
-        numberOfWeeksWithNegativeScore = 0
-        df_results_overall = pd.DataFrame(columns =['Building','Week', 'Surplus Energy [kWh]', 'Peak Load [kW]', 'Costs [Euro]', 'Score', 'Negative Score'])
-
-        for currentWeek in WeeksOfTheYearForSimulation_Training_Period1:
-            print("buildingIndex for generating Data: ", buildingIndex)
-            print("currentWeek for generating Data: ", currentWeek)
-            print()
-            print()
-            outputVectorOptimization_heatGenerationCoefficientSpaceHeating_BT1, outputVectorOptimization_heatGenerationCoefficientDHW_BT1, outputVectorOptimization_chargingPowerEV_BT1, outputVectorOptimization_heatGenerationCoefficientSpaceHeating_BT2, outputVectorOptimization_heatGenerationCoefficientDHW_BT2, outputVectorOptimization_chargingPowerEV_BT3, outputVectorOptimization_heatGenerationCoefficientSpaceHeating_BT4,  outputVectorOptimization_chargingPowerBAT_BT5, outputVectorOptimization_disChargingPowerBAT_BT5 =   Building_Optimization_Problem.optimizeOneWeek(indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, indexOfBuildingsOverall_BT3, indexOfBuildingsOverall_BT4, indexOfBuildingsOverall_BT5, currentWeek)
-
-            #Call the internal controller with the schedules
-            overruleActions = False
-            simulationObjective_surplusEnergy_kWh_combined , simulationObjective_maximumLoad_kW_combined, simulationObjective_costs_Euro_combined, simulationObjective_combinedScore_combined, negativeScore_total_overall = ICSimulation.simulateWeeks_WithAddtionalController_Schedule(indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, indexOfBuildingsOverall_BT3, indexOfBuildingsOverall_BT4, indexOfBuildingsOverall_BT5, currentWeek, overruleActions, outputVectorOptimization_heatGenerationCoefficientSpaceHeating_BT1, outputVectorOptimization_heatGenerationCoefficientDHW_BT1, outputVectorOptimization_chargingPowerEV_BT1, outputVectorOptimization_heatGenerationCoefficientSpaceHeating_BT2, outputVectorOptimization_heatGenerationCoefficientDHW_BT2, outputVectorOptimization_chargingPowerEV_BT3, outputVectorOptimization_heatGenerationCoefficientSpaceHeating_BT4, outputVectorOptimization_chargingPowerBAT_BT5, outputVectorOptimization_disChargingPowerBAT_BT5, pathForCreatingTheResultData_Centralized)
-            if negativeScore_total_overall > 0.1:
-                numberOfWeeksWithNegativeScore = numberOfWeeksWithNegativeScore + 1
-
-            #Save results of the runs in a csv file
-            df_results_overall.loc[len(df_results_overall)] = [buildingIndex, currentWeek, simulationObjective_surplusEnergy_kWh_combined[0], simulationObjective_maximumLoad_kW_combined[0], simulationObjective_costs_Euro_combined[0], simulationObjective_combinedScore_combined[0], negativeScore_total_overall[0]]
-            df_results_overall.to_csv( pathForCreatingTheResultData_Centralized  + "/results_overall.csv", sep=";")
-
-        for currentWeek in WeeksOfTheYearForSimulation_Training_Period2:
-            print("buildingIndex for generating Data: ", buildingIndex)
-            print("currentWeek for generating Data: ", currentWeek)
-            print()
-            print()
-            outputVectorOptimization_heatGenerationCoefficientSpaceHeating_BT1, outputVectorOptimization_heatGenerationCoefficientDHW_BT1, outputVectorOptimization_chargingPowerEV_BT1, outputVectorOptimization_heatGenerationCoefficientSpaceHeating_BT2, outputVectorOptimization_heatGenerationCoefficientDHW_BT2, outputVectorOptimization_chargingPowerEV_BT3, outputVectorOptimization_heatGenerationCoefficientSpaceHeating_BT4,  outputVectorOptimization_chargingPowerBAT_BT5, outputVectorOptimization_disChargingPowerBAT_BT5 =   Building_Optimization_Problem.optimizeOneWeek(indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, indexOfBuildingsOverall_BT3, indexOfBuildingsOverall_BT4, indexOfBuildingsOverall_BT5, currentWeek)
-
-            #Call the internal controller with the schedules
-            overruleActions = True
-            simulationObjective_surplusEnergy_kWh_combined , simulationObjective_maximumLoad_kW_combined, simulationObjective_costs_Euro_combined, simulationObjective_combinedScore_combined, negativeScore_total_overall = ICSimulation.simulateWeeks_WithAddtionalController_Schedule(indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, indexOfBuildingsOverall_BT3, indexOfBuildingsOverall_BT4, indexOfBuildingsOverall_BT5, currentWeek, overruleActions, outputVectorOptimization_heatGenerationCoefficientSpaceHeating_BT1, outputVectorOptimization_heatGenerationCoefficientDHW_BT1, outputVectorOptimization_chargingPowerEV_BT1, outputVectorOptimization_heatGenerationCoefficientSpaceHeating_BT2, outputVectorOptimization_heatGenerationCoefficientDHW_BT2, outputVectorOptimization_chargingPowerEV_BT3, outputVectorOptimization_heatGenerationCoefficientSpaceHeating_BT4, outputVectorOptimization_chargingPowerBAT_BT5, outputVectorOptimization_disChargingPowerBAT_BT5, pathForCreatingTheResultData_Centralized)
-            if negativeScore_total_overall > 0.1:
-                numberOfWeeksWithNegativeScore = numberOfWeeksWithNegativeScore + 1
-            #Save results of the runs in a csv file
-            df_results_overall.loc[len(df_results_overall)] = [buildingIndex, currentWeek, simulationObjective_surplusEnergy_kWh_combined[0], simulationObjective_maximumLoad_kW_combined[0], simulationObjective_costs_Euro_combined[0], simulationObjective_combinedScore_combined[0], negativeScore_total_overall[0]]
-            df_results_overall.to_csv( pathForCreatingTheResultData_Centralized  + "/results_overall.csv", sep=";")
-
-        print()
-        print()
-        print("Finished generateTrainingDataANN")
-        print("numberOfWeeksWithNegativeScore: ", numberOfWeeksWithNegativeScore)
-
-
-
-
-####################################################################################################################################################################################
-
 
 
 #Method for randomly assigning Weeks to the training and test data
@@ -336,9 +264,7 @@ if __name__ == "__main__":
         folderName_WholeSimulation = currentDatetimeString + "_" + simulationName + "_BTCombined_" + str(SetUpScenarios.numberOfBuildings_Total)
         folderPath_WholeSimulation = "C:/Users/wi9632/Desktop/Ergebnisse/DSM/Instance_1/Instance_Base/" + folderName_WholeSimulation
         pathForCreatingTheResultData_Centralized = folderPath_WholeSimulation + "/Centralized"
-        pathForCreatingTheResultData_Decentralized = folderPath_WholeSimulation + "/Decentralized"
         pathForCreatingTheResultData_SupervisedML = folderPath_WholeSimulation + "/ML"
-        pathForCreatingTheResultData_RL = folderPath_WholeSimulation + "/RL"
         pathForCreatingTheResultData_Conventional = folderPath_WholeSimulation + "/Conventional"
         pathForCreatingTheResultData_PriceStorageControl = folderPath_WholeSimulation + "/PSC"
         pathForCreatingTheResultData_SupervisedML_MLP1 = folderPath_WholeSimulation + "/ML/MLP1"
@@ -351,9 +277,7 @@ if __name__ == "__main__":
         try:
             os.makedirs(folderPath_WholeSimulation)
             os.makedirs(pathForCreatingTheResultData_Centralized)
-            #os.makedirs(pathForCreatingTheResultData_Decentralized)
             os.makedirs(pathForCreatingTheResultData_SupervisedML)
-            #os.makedirs(pathForCreatingTheResultData_RL)
             os.makedirs(pathForCreatingTheResultData_Conventional)
             os.makedirs(pathForCreatingTheResultData_PriceStorageControl)
             os.makedirs(pathForCreatingTheResultData_SupervisedML_MLP1)
@@ -372,10 +296,6 @@ if __name__ == "__main__":
         file_path_additional_information = str(folderPath_WholeSimulation) + "/additional_information.txt"
 
 
-
-
-        if generateTrainingData ==True:
-            generateTrainingDataForML()
 
         #Exact methods decentralized (testing)
 
@@ -423,7 +343,8 @@ if __name__ == "__main__":
             #print(f"Week 4 Test Predictions: {testWeeksPrediction[3]}")
             print(f"testWeeksInTrainingData: {testWeeksInTrainingData}")
 
-            #Clustering
+
+            #Clustering of the training data if desired (not used in this paper)
             useKneeMethod = True
             maxNumberOfClusters = 20
             printPlotsForClusterScores = False
@@ -543,7 +464,7 @@ if __name__ == "__main__":
                 else:
                     assignedClusterForTheCurrentSingleWeek = 0
 
-
+                #Use the trained models in the simulation
                 if used_trained_models_in_simulations_supervised_learning == True:
 
 
@@ -588,7 +509,7 @@ if __name__ == "__main__":
 
 
 
-        #Exact methods centralized (testing)
+        #Exact methods centralized
         if useCentralizedOptimization == True:
             print("\n-----------Centralized Optimization---------\n")
 
@@ -607,12 +528,8 @@ if __name__ == "__main__":
             negativScoreTotal_CentralizedOptimization = negativeScore_total_overall
 
 
-        # RL methods
-        if useReinforcementLearning == True:
-            print("RL Control")
 
-
-        # Price Storage control
+        # Price Storage control for BT4
         if usePriceStorageControl_BT4 ==True:
 
             print("\n--------------Price Storage Control------------\n")
@@ -659,6 +576,7 @@ if __name__ == "__main__":
             negativScoreTotal_ConventionalControl = negativeScore_total_overall
             usePriceStorageControl_BT4 = True
 
+        # Print the results of the simulations for the different methods
         if print_results_of_different_methods == True:
             trainingWeeksForSupervisedLearning[0] += 1
             trainingWeeksForSupervisedLearning_string = ', '.join(map(str, trainingWeeksForSupervisedLearning[0]))
