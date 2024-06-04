@@ -138,13 +138,6 @@ if (optimizationGoal_minimizeSurplusEnergy == True and optimizationGoal_minimize
     print("3 Objectives")
 
 
-objective_minimizeSurplusEnergy_normalizationValue = 1
-objective_minimizePeakLoad_normalizationValue = 1
-objective_minimizeCosts_normalizationValue = 1
-
-objective_minimizeSurplusEnergy_weight = 0.5
-objective_minimizePeakLoad_weight = 0.5
-objective_minimizeCosts_weight = 0.5
 
 
 #Constants
@@ -162,30 +155,6 @@ OPT_OBJECTIVE_MIN_COSTS = 'Min_Costs'
 numberOfBuildingDataOverall = 20
 
 
-# Weights for evaluating the constraint violations
-weight_total_ConstraintViolation_BufferStorageTemperatureRange_combined = 1
-weight_total_ConstraintViolation_DHWTankRange_combined =1
-weight_total_ConstraintViolation_BufferStorageTemperatureLastValue_combined = 1
-weight_total_ConstraintViolation_DHWTankLastValue_combined = 1
-weight_total_ConstraintViolation_SOCRangeOfTheEV_combined  = 1
-weight_total_ConstraintViolation_SOCOfTheEVLastValue_combined  = 1  # suggestion 0.5
-weight_total_ConstraintViolation_ChargingPowerOfTheEV_combined  = 1
-weight_total_ConstraintViolation_numberOfStarts_Combined_combined = 1
-weight_total_ConstraintViolation_SOCRangeOfTheBAT_combined  = 1
-
-weight_total_ConstraintViolation_BufferStorageTemperatureRange_CorrectionLimit_Combined =1
-weight_total_ConstraintViolation_DHWTankRange_CorrectionLimit_Combined = 1
-weight_total_ConstraintViolation_BufferStorageTemperatureRange_PhysicalLimit_Combined = 1
-weight_total_ConstraintViolation_DHWTankRange_PhysicalLimit_Combined  = 1
-weight_total_ConstraintViolation_BufferStorageTemperatureLastValue_CorrectionLimit_Combined = 1
-weight_total_ConstraintViolation_DHWTankLastValue_CorrectionLimit_Combined = 1
-weight_total_ConstraintViolation_SOCOfTheEVLastValue_CorrectionLimit_Combined  = 1
-weight_total_ConstraintViolation_numberOfStarts_CorrectionLimit_Combined_Combined  =1
-
-
-
-
-weeksOfTheYearForSimulation_Testing = [ 5]
 
 
 ###################################################################################################################################################################################################
