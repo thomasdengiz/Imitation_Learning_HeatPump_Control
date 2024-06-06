@@ -10,12 +10,12 @@ import SetUpScenarios
 import numpy as np
 import pandas as pd
 import Run_Simulations
-import ANN
+import ML
 import os
 
 
 
-# Method for simulating variable number of weeks with an additional controller if dersired. . This controller adjusts the actions if discomfort is about to occur.
+# Function for simulating variable number of weeks with an additional controller if dersired. . This controller adjusts the actions if discomfort is about to occur.
 # Input: boolean overruleActions, 3-dim-arrays inputVector_BT1_heatGenerationCoefficientSpaceHeating [index_BT1, index_timeslot] etc.
 
 def simulateWeeks_WithAddtionalController_Schedule(indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, indexOfBuildingsOverall_BT3, indexOfBuildingsOverall_BT4, indexOfBuildingsOverall_BT5, currentweek, overruleActions, inputVector_BT1_heatGenerationCoefficientSpaceHeating, inputVector_BT1_heatGenerationCoefficientDHW, inputVector_BT1_chargingPowerEV, inputVector_BT2_heatGenerationCoefficientSpaceHeating, inputVector_BT2_heatGenerationCoefficientDHW, inputVector_BT3_chargingPowerEV, inputVector_BT4_heatGenerationCoefficientSpaceHeating, inputVector_BT5_chargingPowerBAT, inputVector_BT5_disChargingPowerBAT, pathForCreatingTheResultData):
@@ -3224,15 +3224,6 @@ def simulateWeeks_WithAddtionalController_Schedule(indexOfBuildingsOverall_BT1, 
 
     print("")
     print("Negative Scores")
-    print("negativeScore_total_ConstraintViolation_BufferStorageTemperatureRange_combined: ", round(negativeScore_total_ConstraintViolation_BufferStorageTemperatureRange_combined [index_week], 3))
-    print("negativeScore_total_ConstraintViolation_DHWTankRange_combined: ", round(negativeScore_total_ConstraintViolation_DHWTankRange_combined [index_week], 3))
-    print("negativeScore_total_ConstraintViolation_BufferStorageTemperatureLastValue_combined: ",round(negativeScore_total_ConstraintViolation_BufferStorageTemperatureLastValue_combined [index_week], 3))
-    print("negativeScore_total_ConstraintViolation_DHWTankLastValue_combined: ",round(negativeScore_total_ConstraintViolation_DHWTankLastValue_combined [index_week], 3))
-    print("negativeScore_total_ConstraintViolation_SOCRangeOfTheEV_combined: ",round(negativeScore_total_ConstraintViolation_SOCRangeOfTheEV_combined [index_week], 2))
-    print("negativeScore_total_ConstraintViolation_SOCOfTheEVLastValue_combined: ",round(negativeScore_total_ConstraintViolation_SOCOfTheEVLastValue_combined [index_week], 3))
-    print("negativeScore_total_ConstraintViolation_numberOfStarts_Combined_combined: ",round(negativeScore_total_ConstraintViolation_numberOfStarts_Combined_combined [index_week], 3))
-    print("negativeScore_total_ConstraintViolation_SOCRangeOfTheBAT_combined: ",round(negativeScore_total_ConstraintViolation_SOCRangeOfTheBAT_combined [index_week], 2))
-    print("")
     print("negativeScore_total_ConstraintViolation_BufferStorageTemperatureRange_CorrectionLimit_Combined: ",round(negativeScore_total_ConstraintViolation_BufferStorageTemperatureRange_CorrectionLimit_Combined [index_week], 3))
     print("negativeScore_total_ConstraintViolation_DHWTankRange_CorrectionLimit_Combined: ",round(negativeScore_total_ConstraintViolation_DHWTankRange_CorrectionLimit_Combined [index_week], 3))
     print("negativeScore_total_ConstraintViolation_BufferStorageTemperatureRange_PhysicalLimit_Combined: ",round(negativeScore_total_ConstraintViolation_BufferStorageTemperatureRange_PhysicalLimit_Combined [index_week], 3))
@@ -3420,16 +3411,6 @@ def simulateWeeks_WithAddtionalController_Schedule(indexOfBuildingsOverall_BT1, 
         print("", file = f)
         print("Negative Scores", file = f)
         print("", file = f)
-        print("", file = f)
-        print("negativeScore_total_ConstraintViolation_BufferStorageTemperatureRange_combined: ", round(negativeScore_total_ConstraintViolation_BufferStorageTemperatureRange_combined [index_week], 3), file = f)
-        print("negativeScore_total_ConstraintViolation_DHWTankRange_combined: ", round(negativeScore_total_ConstraintViolation_DHWTankRange_combined [index_week], 3), file = f)
-        print("negativeScore_total_ConstraintViolation_BufferStorageTemperatureLastValue_combined: ",round(negativeScore_total_ConstraintViolation_BufferStorageTemperatureLastValue_combined [index_week], 3), file = f)
-        print("negativeScore_total_ConstraintViolation_DHWTankLastValue_combined: ",round(negativeScore_total_ConstraintViolation_DHWTankLastValue_combined [index_week], 3), file = f)
-        print("negativeScore_total_ConstraintViolation_SOCRangeOfTheEV_combined: ",round(negativeScore_total_ConstraintViolation_SOCRangeOfTheEV_combined [index_week], 3), file = f)
-        print("negativeScore_total_ConstraintViolation_SOCOfTheEVLastValue_combined: ",round(negativeScore_total_ConstraintViolation_SOCOfTheEVLastValue_combined [index_week], 3), file = f)
-        print("negativeScore_total_ConstraintViolation_SOCRangeOfTheBAT_combined: ",round(negativeScore_total_ConstraintViolation_SOCRangeOfTheBAT_combined [index_week], 3), file = f)
-        print("negativeScore_total_ConstraintViolation_numberOfStarts_Combined_combined: ",round(negativeScore_total_ConstraintViolation_numberOfStarts_Combined_combined [index_week], 3), file = f)
-        print("", file = f)
         print("negativeScore_total_ConstraintViolation_BufferStorageTemperatureRange_CorrectionLimit_Combined: ",round(negativeScore_total_ConstraintViolation_BufferStorageTemperatureRange_CorrectionLimit_Combined [index_week], 3), file = f)
         print("negativeScore_total_ConstraintViolation_DHWTankRange_CorrectionLimit_Combined: ",round(negativeScore_total_ConstraintViolation_DHWTankRange_CorrectionLimit_Combined [index_week], 3), file = f)
         print("negativeScore_total_ConstraintViolation_BufferStorageTemperatureRange_PhysicalLimit_Combined: ",round(negativeScore_total_ConstraintViolation_BufferStorageTemperatureRange_PhysicalLimit_Combined [index_week], 3), file = f)
@@ -3482,8 +3463,7 @@ def simulateWeeks_WithAddtionalController_Schedule(indexOfBuildingsOverall_BT1, 
 
 
 
-#Simulation method for the conventional control strategy
-
+#Simulation Function for the conventional control strategy for a week
 
 def simulateWeeks_ConventionalControl(indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, indexOfBuildingsOverall_BT3, indexOfBuildingsOverall_BT4, indexOfBuildingsOverall_BT5, currentweek, pathForCreatingTheResultData, usePriceStorageControl):
 
@@ -5103,17 +5083,7 @@ def simulateWeeks_ConventionalControl(indexOfBuildingsOverall_BT1, indexOfBuildi
     negativeScore_total_ConstraintViolation_numberOfStarts_Combined_combined [index_week] = (total_ConstraintViolation_numberOfStarts_Combined_combined [index_week])/SetUpScenarios.numberOfBuildings_Total
 
 
-    print("")
-    print("Negative Scores")
-    print("negativeScore_total_ConstraintViolation_BufferStorageTemperatureRange_combined: ", round(negativeScore_total_ConstraintViolation_BufferStorageTemperatureRange_combined [index_week], 3))
-    print("negativeScore_total_ConstraintViolation_DHWTankRange_combined: ", round(negativeScore_total_ConstraintViolation_DHWTankRange_combined [index_week], 3))
-    print("negativeScore_total_ConstraintViolation_BufferStorageTemperatureLastValue_combined: ", round(negativeScore_total_ConstraintViolation_BufferStorageTemperatureLastValue_combined [index_week], 3))
-    print("negativeScore_total_ConstraintViolation_DHWTankLastValue_combined: ", round(negativeScore_total_ConstraintViolation_DHWTankLastValue_combined [index_week], 3))
-    print("negativeScore_total_ConstraintViolation_SOCRangeOfTheEV_combined: ", round(negativeScore_total_ConstraintViolation_SOCRangeOfTheEV_combined [index_week], 3))
-    print("negativeScore_total_ConstraintViolation_SOCOfTheEVLastValue_combined: ", round(negativeScore_total_ConstraintViolation_SOCOfTheEVLastValue_combined [index_week], 3))
-    print("negativeScore_total_ConstraintViolation_numberOfStarts_Combined_combined: ", round(negativeScore_total_ConstraintViolation_numberOfStarts_Combined_combined [index_week], 3))
-    print("negativeScore_total_ConstraintViolation_SOCRangeOfTheBAT_combined: ", round(negativeScore_total_ConstraintViolation_SOCRangeOfTheBAT_combined [index_week], 3))
-    print("")
+
 
 
     print("")
@@ -5273,15 +5243,6 @@ def simulateWeeks_ConventionalControl(indexOfBuildingsOverall_BT1, indexOfBuildi
         print("Negative Scores", file = f)
         print("", file = f)
         print("", file = f)
-        print("negativeScore_total_ConstraintViolation_BufferStorageTemperatureRange_combined: ", round(negativeScore_total_ConstraintViolation_BufferStorageTemperatureRange_combined [index_week], 3), file = f)
-        print("negativeScore_total_ConstraintViolation_DHWTankRange_combined: ", round(negativeScore_total_ConstraintViolation_DHWTankRange_combined [index_week], 3), file = f)
-        print("negativeScore_total_ConstraintViolation_BufferStorageTemperatureLastValue_combined: ",round(negativeScore_total_ConstraintViolation_BufferStorageTemperatureLastValue_combined [index_week], 3), file = f)
-        print("negativeScore_total_ConstraintViolation_DHWTankLastValue_combined: ",round(negativeScore_total_ConstraintViolation_DHWTankLastValue_combined [index_week], 3), file = f)
-        print("negativeScore_total_ConstraintViolation_SOCRangeOfTheEV_combined: ",round(negativeScore_total_ConstraintViolation_SOCRangeOfTheEV_combined [index_week], 3), file = f)
-        print("negativeScore_total_ConstraintViolation_SOCOfTheEVLastValue_combined: ",round(negativeScore_total_ConstraintViolation_SOCOfTheEVLastValue_combined [index_week], 3), file = f)
-        print("negativeScore_total_ConstraintViolation_SOCRangeOfTheBAT_combined: ",round(negativeScore_total_ConstraintViolation_SOCRangeOfTheBAT_combined [index_week], 3), file = f)
-        print("negativeScore_total_ConstraintViolation_numberOfStarts_Combined_combined: ",round(negativeScore_total_ConstraintViolation_numberOfStarts_Combined_combined [index_week], 3), file = f)
-        print("", file = f)
         print("negativeScore_total_ConstraintViolation_BufferStorageTemperatureRange_CorrectionLimit_Combined: ",round(negativeScore_total_ConstraintViolation_BufferStorageTemperatureRange_CorrectionLimit_Combined [index_week], 3), file = f)
         print("negativeScore_total_ConstraintViolation_DHWTankRange_CorrectionLimit_Combined: ",round(negativeScore_total_ConstraintViolation_DHWTankRange_CorrectionLimit_Combined [index_week], 3), file = f)
         print("negativeScore_total_ConstraintViolation_BufferStorageTemperatureRange_PhysicalLimit_Combined: ",round(negativeScore_total_ConstraintViolation_BufferStorageTemperatureRange_PhysicalLimit_Combined [index_week], 3), file = f)
@@ -5303,6 +5264,7 @@ def simulateWeeks_ConventionalControl(indexOfBuildingsOverall_BT1, indexOfBuildi
 
 
 #'''
+
 
 
 def simulateTimeSlot_WithAddtionalController_BT1 (overruleActions, action_SpaceHeating, action_DHWHeating, action_EVCharging, state_BufferStorageTemperatureLastTimeSlot,
@@ -5882,6 +5844,7 @@ def simulateTimeSlot_WithAddtionalController_BT1 (overruleActions, action_SpaceH
     return action_SpaceHeating, action_DHWHeating, action_EVCharging, simulationResult_BufferStorageTemperature_BT1, simulationResult_UsableVolumeDHW_BT1, simulationResult_SOCofEV_BT1, helpCountNumberOfStartsIndividual_SpaceHeating, helpCountNumberOfStartsIndividual_DHW, helpCountNumberOfStarts_Combined , helpCounterNumberOfRunningSlots_SpaceHeating , helpCounterNumberOfRunningSlots_DHW , helpCounterNumberOfRunningSlots_Combined , helpCounterNumberOfStandBySlots_SpaceHeating , helpCounterNumberOfStandBySlots_DHW , helpCounterNumberOfStandBySlots_Combined, helpCurrentPeakLoad,  helpStartedHeatingHeatPump, numberOfHeatPumpStartsReachedSoftLimit, numberOfHeatPumpStartsReachedHardLimit, helpHypotheticalSOCDropNoCharging, lastHeatingAfterHeatPumpStartsReachedHardLimitStarted, lastHeatingAfterHeatPumpStartsReachedHardLimitStopped, heatingStartedPhysicalLimit_BufferStorage, heatingStartedPhysicalLimit_DHWTank,startedHeatingSpaceHeatingCorrection_end, startedHeatingDHWCorrection_end, help_bothStorageHeatedUp_lastTimeBufferStorageOverruled, help_bothStorageHeatedUp_lastTimeDHWOverruled
 
 #'''
+#Function for simulating one single timeslot with an additional controler for building type 2 (not used in this paper)
 def simulateTimeSlot_WithAddtionalController_BT2 (overruleActions, action_SpaceHeating, action_DHWHeating, state_BufferStorageTemperatureLastTimeSlot,
                                                  state_usableVolumeDHWLastTimeSlot, helpCountNumberOfStartsIndividual_SpaceHeating,
                                                  helpCountNumberOfStartsIndividual_DHW, helpCountNumberOfStarts_Combined , helpCounterNumberOfRunningSlots_SpaceHeating , helpCounterNumberOfRunningSlots_DHW ,
@@ -6389,6 +6352,7 @@ def simulateTimeSlot_WithAddtionalController_BT2 (overruleActions, action_SpaceH
 
 
 
+#Function for simulating one single timeslot with an additional controler for building type 3 (not used in this paper)
 def simulateTimeSlot_WithAddtionalController_BT3 (overruleActions,  action_EVCharging, state_SOCofEVLastTimeSlot, helpCurrentPeakLoad,
                                                  index_timeslot, outsideTemperature, PVGeneration, electricityDemand, availabilityOfTheEV, energyDemandEV, priceForElectricity_CentsPerkWh, helpPVGenerationPreviousTimeSlot, helpElectricalLoadPreviousTimeSlot, helpHypotheticalSOCDropNoCharging ):
 
@@ -6524,7 +6488,7 @@ def simulateTimeSlot_WithAddtionalController_BT3 (overruleActions,  action_EVCha
 
 
 #'''
-
+#Method for simulating one single timeslot with an additional controler for building type 4
 def simulateTimeSlot_WithAddtionalController_BT4 (overruleActions, action_SpaceHeating, state_BufferStorageTemperatureLastTimeSlot
                                                  ,helpCountNumberOfStartsIndividual_SpaceHeating,
                                                   helpCountNumberOfStarts_Combined , helpCounterNumberOfRunningSlots_SpaceHeating ,
@@ -6780,7 +6744,7 @@ def simulateTimeSlot_WithAddtionalController_BT4 (overruleActions, action_SpaceH
 
 
 #'''
-
+#Function for simulating one single timeslot with an additional controler for building type 5 (not used in this paper)
 def simulateTimeSlot_WithAddtionalController_BT5 (overruleActions,  action_chargingPowerBat, action_disChargingPowerBat, state_SOCofBATLastTimeSlot, helpCurrentPeakLoad,
                                                  index_timeslot, outsideTemperature, PVGeneration, electricityDemand,  priceForElectricity_CentsPerkWh, helpPVGenerationPreviousTimeSlot, helpElectricalLoadPreviousTimeSlot ):
 

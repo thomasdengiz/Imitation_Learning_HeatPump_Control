@@ -21,7 +21,7 @@ usePriceStorageControl_BT4 = True
 
 
 useSupervisedLearning = True
-used_trained_models_in_simulations_supervised_learning = False
+used_trained_models_in_simulations_supervised_learning = True
 print_results_of_different_methods = True
 
 building_type_for_supervised_learning = "kWh25"
@@ -233,7 +233,7 @@ def chooseTrainingAndTestWeeks_Random (numberOfTrainingWeeks_Overall, numberOfBu
 
 if __name__ == "__main__":
     import Building_Optimization_Problem
-    import ANN
+    import ML
     import ICSimulation
     import pandas as pd
     import time
@@ -392,13 +392,20 @@ if __name__ == "__main__":
 
 
 
-            #Create arrays for the different ML methods
-            usedMLMethod_array = [""] * number_of_iterations_ML_method
-            usedMLMethod_array [0] = ML_METHOD_MULTI_LAYER_PERCEPTRON_1
-            usedMLMethod_array [1] = ML_METHOD_MULTI_LAYER_PERCEPTRON_2
-            usedMLMethod_array [2] = ML_METHOD_RANDOM_FOREST
-            usedMLMethod_array [3] = ML_METHOD_GRADIENT_BOOSTING
+            # List of ML methods to be used
+            ml_methods = [
+                ML_METHOD_MULTI_LAYER_PERCEPTRON_1,
+                ML_METHOD_MULTI_LAYER_PERCEPTRON_2,
+                ML_METHOD_RANDOM_FOREST,
+                ML_METHOD_GRADIENT_BOOSTING
+            ]
 
+            # Create array with default values
+            usedMLMethod_array = [""] * number_of_iterations_ML_method
+
+            # Assign the ML methods to the array
+            for i in range(min(number_of_iterations_ML_method, len(ml_methods))):
+                usedMLMethod_array[i] = ml_methods[i]
 
 
 
@@ -605,7 +612,8 @@ if __name__ == "__main__":
 
         df_ML_results = pd.DataFrame({"MLP1": mlp1_data,"MLP2": mlp2_data,"RF1": rf1_data,"GB1": gb1_data})
         average_row = df_ML_results.mean()
-        df_ML_results = df_ML_results.append(average_row, ignore_index=True)
+        average_row_df = pd.DataFrame([average_row])
+        df_ML_results = pd.concat([df_ML_results, average_row_df], ignore_index=True)
         df_ML_results.to_csv(folderPath_WholeSimulation + '/results_ML_no_simulation.csv', index=False, sep=";")
 
     if print_results_of_different_methods == True:
