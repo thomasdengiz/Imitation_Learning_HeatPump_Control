@@ -700,9 +700,8 @@ def trainSupervisedML_SingleTimeslot_SingleBuildingOptScenario (trainingData, ob
     numberOfInputFeatures = len(MLSupvervised_input_data[0])
     numberOfOutputNeurons = len(MLSupervised_output_data[0])
 
-    #Train a Mulit Layer Perceptron
+    #Train a Multi Layer Perceptron
     if usedMLMethod == 'Multi_Layer_Perceptron_1' :
-        #optimizer_adam = tf.keras.optimizers.Adam(learning_rate=0.001)
         optimizer_adam = tf.keras.optimizers.Adam(learning_rate=0.001)
 
         model = keras.Sequential([
@@ -718,10 +717,6 @@ def trainSupervisedML_SingleTimeslot_SingleBuildingOptScenario (trainingData, ob
 
         model.compile(loss="mean_squared_error", optimizer=optimizer_adam, metrics=['mean_absolute_percentage_error'])
         history = model.fit(X_train, Y_train, epochs=20, batch_size=5, validation_data=(X_valid, Y_valid), callbacks=callbacks)
-
-        #Plot the training results
-
-
 
 
         # Predict the values from the test dataset
@@ -746,11 +741,6 @@ def trainSupervisedML_SingleTimeslot_SingleBuildingOptScenario (trainingData, ob
 
         model.compile(loss="mean_squared_error", optimizer=optimizer_adam, metrics=['mean_absolute_percentage_error'])
         history = model.fit(X_train, Y_train, epochs=20, batch_size=40, validation_data=(X_valid, Y_valid), callbacks=callbacks)
-
-        #Plot the training results
-
-
-
 
         # Predict the values from the test dataset
         model_best = keras.models.load_model(pathOfTheFileForBestModel)

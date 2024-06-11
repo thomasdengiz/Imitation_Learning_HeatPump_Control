@@ -10,8 +10,8 @@ DIR_PRICE_DATA = "C:/Users/wi9632/Desktop/Input_Data/Price_1Minute_Weeks/"
 
 
 #Input data files for the building clusters. Choose on of the 3 options (25kWh, 50kWh, 80kWh) and comment the others out by using # at the beginning of the line
-DIR_DATA_BT4 = "C:/Users/wi9632/Desktop/Input_Data/BT4_mHP_MFH_1Minute_Weeks_kWh25/"
-#DIR_DATA_BT4 = "C:/Users/wi9632/Desktop/Input_Data/BT4_mHP_MFH_1Minute_Weeks_kWh50/"
+#DIR_DATA_BT4 = "C:/Users/wi9632/Desktop/Input_Data/BT4_mHP_MFH_1Minute_Weeks_kWh25/"
+DIR_DATA_BT4 = "C:/Users/wi9632/Desktop/Input_Data/BT4_mHP_MFH_1Minute_Weeks_kWh50/"
 #DIR_DATA_BT4 = "C:/Users/wi9632/Desktop/Input_Data/BT4_mHP_MFH_1Minute_Weeks_kWh80/"
 
 
