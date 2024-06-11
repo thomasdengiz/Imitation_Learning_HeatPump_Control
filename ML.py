@@ -9,8 +9,14 @@ import Run_Simulations
 import pandas as pd
 from sklearn.metrics import mean_absolute_error
 
+import config
 
-# This function traines a supervised ML method for a single building to map the inputs to the outputs(heating actions, EV charging, battery charging)) of the optimization (only BT4 with a heat pump is used in this paper; no EV and no battery)
+"""
+ This function traines a supervised ML method for a single building to map the inputs to the outputs(heating actions, EV charging, battery charging)) of the optimization (only BT4 with a heat pump is used in this paper; no EV and no battery)
+ It can be applied to 5 different building types with different flexibility options (only BT4 is used in this paper)
+ The supervised machine learning methods include: Multi-Layer Perceptron (2 different instances are implemented), Random Forest and Gradient Boosting Decision Trees
+ 3 different goals can be considered: Minimize Surplus Energy (not considered in the paper), minimize peak load (not considered in the paper), minimize electricity cost
+"""
 def trainSupervisedML_SingleTimeslot_SingleBuildingOptScenario (trainingData, objective, useNormalizedData, useStandardizedData, usedMLMethod, pathForTheTrainedModels, practiseModeWithTestPredictions, testWeeksPrediction, help_string_features_use, building_index_increment_training, building_index_increment_simulation):
     from random import randrange
     from sklearn.preprocessing import StandardScaler, MinMaxScaler
@@ -434,7 +440,7 @@ def trainSupervisedML_SingleTimeslot_SingleBuildingOptScenario (trainingData, ob
                    if trainingData[indexBuilding][indexTrainingWeek] > -1:
 
                     #Read the training data
-                    pathForTrainingData = f"C:/Users/wi9632/Desktop/Daten/DSM/Training_Data/Weeks_BT4_New/{Run_Simulations.building_type_for_supervised_learning}/Min_Costs_Scaled_PV_0_kWp_{SetUpScenarios.timeResolution_InMinutes}_Min_A/BT4_HH" + str(indexBuilding + building_index_increment_training + 1)  + "/Week" + str(trainingData [indexBuilding][indexTrainingWeek]  +1) + "/BT4_HH1.csv"
+                    pathForTrainingData = f"{config.DIR_TRAINING_DATA_BT4}{Run_Simulations.building_type_for_supervised_learning}/Min_Costs_Scaled_PV_0_kWp_{SetUpScenarios.timeResolution_InMinutes}_Min_A/BT4_HH" + str(indexBuilding + building_index_increment_training + 1)  + "/Week" + str(trainingData [indexBuilding][indexTrainingWeek]  +1) + "/BT4_HH1.csv"
 
                     help_string_features_drop = 'timeslot,simulationResult_PVGeneration,simulationResult_electricalLoad,simulationResult_SurplusPower,simulationResult_costs'
                     columns_to_drop = help_string_features_drop.split(',')
@@ -460,7 +466,7 @@ def trainSupervisedML_SingleTimeslot_SingleBuildingOptScenario (trainingData, ob
 
             #Week1
             testWeek = testWeeksPrediction [0]
-            pathForTrainingData = f"C:/Users/wi9632/Desktop/Daten/DSM/Training_Data/Weeks_BT4_New/{Run_Simulations.building_type_for_supervised_learning}/Min_Costs_Scaled_PV_0_kWp_{SetUpScenarios.timeResolution_InMinutes}_Min_A/BT4_HH" + str(indexBuilding + building_index_increment_simulation + 1)  + "/Week" + str(testWeek+1) + "/BT4_HH1.csv"
+            pathForTrainingData = f"{config.DIR_TRAINING_DATA_BT4}{Run_Simulations.building_type_for_supervised_learning}/Min_Costs_Scaled_PV_0_kWp_{SetUpScenarios.timeResolution_InMinutes}_Min_A/BT4_HH" + str(indexBuilding + building_index_increment_simulation + 1)  + "/Week" + str(testWeek+1) + "/BT4_HH1.csv"
             df_testWeekPrediction = pd.read_csv(pathForTrainingData, sep=";")
             df_testWeekPrediction.drop(columns_to_drop, axis=1, inplace=True)
             MLSupvervised_input_data_TestWeekPrediction1 = df_testWeekPrediction[columns_to_use]
@@ -471,7 +477,7 @@ def trainSupervisedML_SingleTimeslot_SingleBuildingOptScenario (trainingData, ob
 
             #Week2
             testWeek = testWeeksPrediction [1]
-            pathForTrainingData = f"C:/Users/wi9632/Desktop/Daten/DSM/Training_Data/Weeks_BT4_New/{Run_Simulations.building_type_for_supervised_learning}/Min_Costs_Scaled_PV_0_kWp_{SetUpScenarios.timeResolution_InMinutes}_Min_A/BT4_HH" + str(indexBuilding + building_index_increment_simulation + 1)  + "/Week" + str(testWeek +1) + "/BT4_HH1.csv"
+            pathForTrainingData = f"{config.DIR_TRAINING_DATA_BT4}{Run_Simulations.building_type_for_supervised_learning}/Min_Costs_Scaled_PV_0_kWp_{SetUpScenarios.timeResolution_InMinutes}_Min_A/BT4_HH" + str(indexBuilding + building_index_increment_simulation + 1)  + "/Week" + str(testWeek +1) + "/BT4_HH1.csv"
             df_testWeekPrediction = pd.read_csv(pathForTrainingData, sep=";")
             df_testWeekPrediction.drop(columns_to_drop, axis=1, inplace=True)
             MLSupvervised_input_data_TestWeekPrediction2 = df_testWeekPrediction[columns_to_use]
@@ -481,7 +487,7 @@ def trainSupervisedML_SingleTimeslot_SingleBuildingOptScenario (trainingData, ob
 
             #Week3
             testWeek = testWeeksPrediction [2]
-            pathForTrainingData = f"C:/Users/wi9632/Desktop/Daten/DSM/Training_Data/Weeks_BT4_New/{Run_Simulations.building_type_for_supervised_learning}/Min_Costs_Scaled_PV_0_kWp_{SetUpScenarios.timeResolution_InMinutes}_Min_A/BT4_HH" + str(indexBuilding + building_index_increment_simulation + 1)  + "/Week" + str(testWeek +1) + "/BT4_HH1.csv"
+            pathForTrainingData = f"{config.DIR_TRAINING_DATA_BT4}{Run_Simulations.building_type_for_supervised_learning}/Min_Costs_Scaled_PV_0_kWp_{SetUpScenarios.timeResolution_InMinutes}_Min_A/BT4_HH" + str(indexBuilding + building_index_increment_simulation + 1)  + "/Week" + str(testWeek +1) + "/BT4_HH1.csv"
             df_testWeekPrediction = pd.read_csv(pathForTrainingData, sep=";")
             df_testWeekPrediction.drop(columns_to_drop, axis=1, inplace=True)
             MLSupvervised_input_data_TestWeekPrediction3 = df_testWeekPrediction[columns_to_use]
@@ -491,7 +497,7 @@ def trainSupervisedML_SingleTimeslot_SingleBuildingOptScenario (trainingData, ob
 
             #Week4
             testWeek = testWeeksPrediction [3]
-            pathForTrainingData = f"C:/Users/wi9632/Desktop/Daten/DSM/Training_Data/Weeks_BT4_New/{Run_Simulations.building_type_for_supervised_learning}/Min_Costs_Scaled_PV_0_kWp_{SetUpScenarios.timeResolution_InMinutes}_Min_A/BT4_HH" + str(indexBuilding + building_index_increment_simulation + 1)  + "/Week" + str(testWeek +1) + "/BT4_HH1.csv"
+            pathForTrainingData = f"{config.DIR_TRAINING_DATA_BT4}{Run_Simulations.building_type_for_supervised_learning}/Min_Costs_Scaled_PV_0_kWp_{SetUpScenarios.timeResolution_InMinutes}_Min_A/BT4_HH" + str(indexBuilding + building_index_increment_simulation + 1)  + "/Week" + str(testWeek +1) + "/BT4_HH1.csv"
             df_testWeekPrediction = pd.read_csv(pathForTrainingData, sep=";")
             df_testWeekPrediction.drop(columns_to_drop, axis=1, inplace=True)
             MLSupvervised_input_data_TestWeekPrediction4 = df_testWeekPrediction[columns_to_use]
@@ -501,7 +507,7 @@ def trainSupervisedML_SingleTimeslot_SingleBuildingOptScenario (trainingData, ob
 
             #Week5
             testWeek = testWeeksPrediction [4]
-            pathForTrainingData = f"C:/Users/wi9632/Desktop/Daten/DSM/Training_Data/Weeks_BT4_New/{Run_Simulations.building_type_for_supervised_learning}/Min_Costs_Scaled_PV_0_kWp_{SetUpScenarios.timeResolution_InMinutes}_Min_A/BT4_HH" + str(indexBuilding + building_index_increment_simulation + 1)  + "/Week" + str(testWeek +1) + "/BT4_HH1.csv"
+            pathForTrainingData = f"{config.DIR_TRAINING_DATA_BT4}{Run_Simulations.building_type_for_supervised_learning}/Min_Costs_Scaled_PV_0_kWp_{SetUpScenarios.timeResolution_InMinutes}_Min_A/BT4_HH" + str(indexBuilding + building_index_increment_simulation + 1)  + "/Week" + str(testWeek +1) + "/BT4_HH1.csv"
             df_testWeekPrediction = pd.read_csv(pathForTrainingData, sep=";")
             df_testWeekPrediction.drop(columns_to_drop, axis=1, inplace=True)
             MLSupvervised_input_data_TestWeekPrediction5 = df_testWeekPrediction[columns_to_use]
@@ -1031,7 +1037,6 @@ def trainSupervisedML_SingleTimeslot_SingleBuildingOptScenario (trainingData, ob
             mean_diff_predictionWeek5 = np.mean(np.abs(MLSupervised_output_data_TestWeekPrediction5_RMSE - Y_pred_predictionWeek5_traInv_RMSE))
 
 
-            #np.savetxt("C:/Users/wi9632/Desktop/Y_pred_predictionWeek_traInv.csv", Y_pred_predictionWeek_traInv, delimiter=";")
             print()
             print()
             print("Evaluation with the test data")
@@ -1082,14 +1087,18 @@ def trainSupervisedML_SingleTimeslot_SingleBuildingOptScenario (trainingData, ob
     #return MLSupvervised_input_data, MLSupervised_output_data, X_train, X_valid, X_test, Y_train, Y_valid, Y_test, Y_pred_traInv, Y_test_traInv
 
 
+"""
 # Generates the actions for single time slots and for the single building optimization scenario by using a trained ANN.
+ It can be applied to 5 different building types with different flexibility options (only BT4 is used in this paper)
+ 3 different goals can be considered: Minimize Surplus Energy (not considered in the paper), minimize peak load (not considered in the paper), minimize electricity cost
+"""
 def generateActionsForSingleTimeslotWithANN_SingleBuildingOptScenario (indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, indexOfBuildingsOverall_BT3, indexOfBuildingsOverall_BT4, indexOfBuildingsOverall_BT5, currentWeek ,pathForCreatingTheResultData_ANN, objective, usedWeekSelectionMethod, dataScaler_InputFeatures, dataScaler_OutputLabels, trainedModel, building_index_increment_simulation):
     import ICSimulation
     from joblib import dump, load
 
 
     #Reading of the price data
-    df_priceData_original = pd.read_csv('C:/Users/wi9632/Desktop/Daten/DSM/Price_1Minute_Weeks/' + SetUpScenarios.typeOfPriceData +'/Price_' + SetUpScenarios.typeOfPriceData +'_1Minute_Week' +  str(currentWeek) + '.csv', sep =";")
+    df_priceData_original = pd.read_csv(config.DIR_PRICE_DATA + SetUpScenarios.typeOfPriceData +'/Price_' + SetUpScenarios.typeOfPriceData +'_1Minute_Week' +  str(currentWeek) + '.csv', sep =";")
     df_priceData_original['Time'] = pd.to_datetime(df_priceData_original['Time'], format = '%d.%m.%Y %H:%M')
     df_priceData = df_priceData_original.set_index('Time').resample(str(SetUpScenarios.timeResolution_InMinutes) +'Min').mean()
     arrayTimeSlots = [i for i in range (1,SetUpScenarios.numberOfTimeSlotsPerWeek + 1)]
@@ -1097,7 +1106,7 @@ def generateActionsForSingleTimeslotWithANN_SingleBuildingOptScenario (indexOfBu
     df_priceData = df_priceData.set_index('Timeslot')
 
     #Reading outside temperature data
-    df_outsideTemperatureData_original = pd.read_csv('C:/Users/wi9632/Desktop/Daten/DSM/Outside_Temperature_1Minute_Weeks/Outside_Temperature_1Minute_Week' +  str(currentWeek) + '.csv', sep =";")
+    df_outsideTemperatureData_original = pd.read_csv(config.DIR_TEMPERATURE_DATA + 'Outside_Temperature_1Minute_Week' +  str(currentWeek) + '.csv', sep =";")
     df_outsideTemperatureData_original['Time'] = pd.to_datetime(df_outsideTemperatureData_original['Time'], format = '%d.%m.%Y %H:%M')
     df_outsideTemperatureData = df_outsideTemperatureData_original.set_index('Time').resample(str(SetUpScenarios.timeResolution_InMinutes) +'Min').mean()
     df_outsideTemperatureData['Timeslot'] = arrayTimeSlots
@@ -1115,12 +1124,11 @@ def generateActionsForSingleTimeslotWithANN_SingleBuildingOptScenario (indexOfBu
 
 
     #Reading of the building data
-    list_df_buildingData_BT1_original= [pd.read_csv("C:/Users/wi9632/Desktop/Daten/DSM/BT1_mHP_EV_SFH_1Minute_Weeks/HH" + str(index) + "/HH" + str(index) + "_Week" + str(currentWeek) +".csv", sep =";") for index in indexOfBuildingsOverall_BT1]
-    list_df_buildingData_BT2_original= [pd.read_csv("C:/Users/wi9632/Desktop/Daten/DSM/BT2_mHP_SFH_1Minute_Weeks/HH" + str(index) + "/HH" + str(index) + "_Week" + str(currentWeek) +".csv", sep =";") for index in indexOfBuildingsOverall_BT2]
-    list_df_buildingData_BT3_original= [pd.read_csv("C:/Users/wi9632/Desktop/Daten/DSM/BT3_EV_SFH_1Minute_Weeks/HH" + str(index) + "/HH" + str(index) + "_Week" + str(currentWeek) +".csv", sep =";") for index in indexOfBuildingsOverall_BT3]
-    list_df_buildingData_BT4_original= [pd.read_csv("C:/Users/wi9632/Desktop/Daten/DSM/BT4_mHP_MFH_1Minute_Weeks/HH" + str(index) + "/HH" + str(index) + "_Week" + str(currentWeek) +".csv", sep =";") for index in indexOfBuildingsOverall_BT4]
-    list_df_buildingData_BT5_original= [pd.read_csv("C:/Users/wi9632/Desktop/Daten/DSM/BT5_BAT_SFH_1Minute_Weeks/HH" + str(index) + "/HH" + str(index) + "_Week" + str(currentWeek) +".csv", sep =";") for index in indexOfBuildingsOverall_BT5]
-
+    list_df_buildingData_BT1_original= [pd.read_csv(config.DIR_DATA_BT1 + "HH" + str(index) + "/HH" + str(index) + "_Week" + str(currentWeek) +".csv", sep =";") for index in indexOfBuildingsOverall_BT1]
+    list_df_buildingData_BT2_original= [pd.read_csv(config.DIR_DATA_BT2 + "HH" + str(index) + "/HH" + str(index) + "_Week" + str(currentWeek) +".csv", sep =";") for index in indexOfBuildingsOverall_BT2]
+    list_df_buildingData_BT3_original= [pd.read_csv(config.DIR_DATA_BT3 + "HH" + str(index) + "/HH" + str(index) + "_Week" + str(currentWeek) +".csv", sep =";") for index in indexOfBuildingsOverall_BT3]
+    list_df_buildingData_BT4_original= [pd.read_csv(config.DIR_DATA_BT4 + "HH" + str(index) + "/HH" + str(index) + "_Week" + str(currentWeek) +".csv", sep =";") for index in indexOfBuildingsOverall_BT4]
+    list_df_buildingData_BT5_original= [pd.read_csv(config.DIR_DATA_BT5 + "HH" + str(index) + "/HH" + str(index) + "_Week" + str(currentWeek) +".csv", sep =";") for index in indexOfBuildingsOverall_BT5]
 
 
     list_df_buildingData_BT1 = list_df_buildingData_BT1_original.copy()
@@ -1128,7 +1136,6 @@ def generateActionsForSingleTimeslotWithANN_SingleBuildingOptScenario (indexOfBu
     list_df_buildingData_BT3 = list_df_buildingData_BT3_original.copy()
     list_df_buildingData_BT4 = list_df_buildingData_BT4_original.copy()
     list_df_buildingData_BT5 = list_df_buildingData_BT5_original.copy()
-
 
 
     #Rename column 'Demand Electricity [W]' to 'Electricity [W]' if it exists

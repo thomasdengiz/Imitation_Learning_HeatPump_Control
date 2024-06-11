@@ -1,13 +1,12 @@
-# -*- coding: utf-8 -*-
+#
 """
-Created on Mon Mar 15 17:26:50 2021
-
-@author: wi9632
+This file contains the main script for the simulations
 """
 import SetUpScenarios
 import numpy as np
 import os
 from datetime import datetime
+import config
 
 
 #Set up
@@ -24,7 +23,7 @@ useSupervisedLearning = True
 used_trained_models_in_simulations_supervised_learning = True
 print_results_of_different_methods = True
 
-building_type_for_supervised_learning = "kWh25"
+building_type_for_supervised_learning = "kWh25" #If you want to use another building cluster, also adjust the input data path for BT4 in the config file. Options are (kWh25, kWh50, kWh80)
 help_string_features_use = 'COP (Space Heating),numberOfStarts_HP,HP_isRunning,PriceFactor,StorageFactor,AverageTemperature'
 
 
@@ -262,7 +261,7 @@ if __name__ == "__main__":
 
         simulationName = "BT4_N1_Test/Week"
         folderName_WholeSimulation = currentDatetimeString + "_" + simulationName + "_BTCombined_" + str(SetUpScenarios.numberOfBuildings_Total)
-        folderPath_WholeSimulation = "C:/Users/wi9632/Desktop/Ergebnisse/DSM/Instance_1/Instance_Base/" + folderName_WholeSimulation
+        folderPath_WholeSimulation = config.DIR_RESULTS_SIMULATION + folderName_WholeSimulation
         pathForCreatingTheResultData_Centralized = folderPath_WholeSimulation + "/Centralized"
         pathForCreatingTheResultData_SupervisedML = folderPath_WholeSimulation + "/ML"
         pathForCreatingTheResultData_Conventional = folderPath_WholeSimulation + "/Conventional"
@@ -354,7 +353,7 @@ if __name__ == "__main__":
 
 
             if useClustering == True:
-                trainedClusteringModel, resultingNumberOfClusters, dataScalerClustering = ANN.clusterTrainingData(trainingWeeksForSupervisedLearning, useKneeMethod, maxNumberOfClusters, printPlotsForClusterScores, usePredefinedNumberOfClusters, predefinedNumberOfClusters)
+                trainedClusteringModel, resultingNumberOfClusters, dataScalerClustering = ML.clusterTrainingData(trainingWeeksForSupervisedLearning, useKneeMethod, maxNumberOfClusters, printPlotsForClusterScores, usePredefinedNumberOfClusters, predefinedNumberOfClusters)
 
                 #Assign cluster to the Weeks of the training and test data
                 clusterAssignmentToTheWeeksOfTheTrainingData = np.zeros(len(trainingWeeksForSupervisedLearning[0]))
@@ -364,7 +363,7 @@ if __name__ == "__main__":
 
                 for i in range (0, len(trainingWeeksForSupervisedLearning[0])):
                     WeekForTesting = [trainingWeeksForSupervisedLearning [0][i]]
-                    clusterAssignmentToTheWeeksOfTheTrainingData [i] = ANN.assignClusterNumberToAWeek(trainedClusteringModel, dataScalerClustering, WeekForTesting)
+                    clusterAssignmentToTheWeeksOfTheTrainingData [i] = ML.assignClusterNumberToAWeek(trainedClusteringModel, dataScalerClustering, WeekForTesting)
 
 
                 clusterAssignmentToTheWeeksOfTheTestData = np.zeros(len(testWeeksForSupvervisedLearning[0]))
@@ -372,7 +371,7 @@ if __name__ == "__main__":
                 clustersWithAssignedWeeks_ForTest = clustersWithAssignedWeeks_ForTest -1
                 for i in range (0, len(testWeeksForSupvervisedLearning[0])):
                     WeekForTesting = [testWeeksForSupvervisedLearning [0][i]]
-                    clusterAssignmentToTheWeeksOfTheTestData [i] = ANN.assignClusterNumberToAWeek(trainedClusteringModel, dataScalerClustering, WeekForTesting)
+                    clusterAssignmentToTheWeeksOfTheTestData [i] = ML.assignClusterNumberToAWeek(trainedClusteringModel, dataScalerClustering, WeekForTesting)
 
 
                 helpIndexForAssigningWeeksToCluster = [0] * resultingNumberOfClusters
@@ -455,10 +454,10 @@ if __name__ == "__main__":
                         inputFormatForClustering [0]  =clustersWithAssignedWeeks_ForTraining[b]
 
 
-                    dataScaler_InputFeatures, dataScaler_OutputLabels, trainedModel, test_prediction_avg_mse = ANN.trainSupervisedML_SingleTimeslot_SingleBuildingOptScenario (inputFormatForClustering, objective ,useNormalizedData, useStandardizedData, usedMLMethod,pathForTheTrainedModels, practiseModeWithTestPredictions, testWeeksPrediction, help_string_features_use,building_index_increment_training, building_index_increment_simulation )
+                    dataScaler_InputFeatures, dataScaler_OutputLabels, trainedModel, test_prediction_avg_mse = ML.trainSupervisedML_SingleTimeslot_SingleBuildingOptScenario (inputFormatForClustering, objective ,useNormalizedData, useStandardizedData, usedMLMethod,pathForTheTrainedModels, practiseModeWithTestPredictions, testWeeksPrediction, help_string_features_use,building_index_increment_training, building_index_increment_simulation )
                     list_test_prediction_practise_mode_avg_mse.append(test_prediction_avg_mse)
                     if usedMLMethod == ML_METHOD_LSTM or usedMLMethod == ML_METHOD_RNN:
-                        dataScaler_InputFeatures, dataScaler_OutputLabels, trainedModel = ANN.trainRNN_MultipleTimeslot_SingleBuildingOptScenario(inputFormatForClustering, objective, useNormalizedData, useStandardizedData, usedMLMethod, practiseModeWithTestPredictions, perfectForecastForSequencePredictions)
+                        dataScaler_InputFeatures, dataScaler_OutputLabels, trainedModel = ML.trainRNN_MultipleTimeslot_SingleBuildingOptScenario(inputFormatForClustering, objective, useNormalizedData, useStandardizedData, usedMLMethod, practiseModeWithTestPredictions, perfectForecastForSequencePredictions)
 
                     dataScalers_InputFeatures.append(dataScaler_InputFeatures)
                     dataScalers_OutputLabels.append(dataScaler_OutputLabels)
@@ -467,7 +466,7 @@ if __name__ == "__main__":
                 #Classify the current Week using the established clusters
 
                 if useClustering == True:
-                    assignedClusterForTheCurrentSingleWeek =  ANN.assignClusterNumberToAWeek(trainedClusteringModel, dataScalerClustering, [currentWeek])[0]
+                    assignedClusterForTheCurrentSingleWeek =  ML.assignClusterNumberToAWeek(trainedClusteringModel, dataScalerClustering, [currentWeek])[0]
                 else:
                     assignedClusterForTheCurrentSingleWeek = 0
 
@@ -484,11 +483,11 @@ if __name__ == "__main__":
 
 
                         #Call method for the simulation of one Week by generating and taking actions for single time slots
-                        outputVectorANN_heatGenerationCoefficientSpaceHeating_BT4, outputVectorANN_temperatureBufferStorage_BT4 = ANN.generateActionsForSingleTimeslotWithANN_SingleBuildingOptScenario(indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, indexOfBuildingsOverall_BT3, indexOfBuildingsOverall_BT4, indexOfBuildingsOverall_BT5, week_for_testing_supervised_learning_in_simulation, pathForTheTrainedModels,objective, WeekSelectionMethod, dataScaler_InputFeatures, dataScaler_OutputLabels, trainedModel, building_index_increment_simulation)
+                        outputVectorANN_heatGenerationCoefficientSpaceHeating_BT4, outputVectorANN_temperatureBufferStorage_BT4 = ML.generateActionsForSingleTimeslotWithANN_SingleBuildingOptScenario(indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, indexOfBuildingsOverall_BT3, indexOfBuildingsOverall_BT4, indexOfBuildingsOverall_BT5, week_for_testing_supervised_learning_in_simulation, pathForTheTrainedModels,objective, WeekSelectionMethod, dataScaler_InputFeatures, dataScaler_OutputLabels, trainedModel, building_index_increment_simulation)
 
                         if usedMLMethod == ML_METHOD_LSTM or usedMLMethod == ML_METHOD_RNN:
                             # Call method for the simulation of one Week by generating and taking actions for multiple time slots
-                            outputVectorANN_heatGenerationCoefficientSpaceHeating_BT4 = ANN.generateActionsForMutipleTimeslotWithANN_SingleBuildingOptScenario(indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, indexOfBuildingsOverall_BT3, indexOfBuildingsOverall_BT4, indexOfBuildingsOverall_BT5, week_for_testing_supervised_learning_in_simulation, pathForCreatingTheResultData_SupervisedML,objective, WeekSelectionMethod, dataScaler_InputFeatures, dataScaler_OutputLabels, trainedModel)
+                            outputVectorANN_heatGenerationCoefficientSpaceHeating_BT4 = ML.generateActionsForMutipleTimeslotWithANN_SingleBuildingOptScenario(indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, indexOfBuildingsOverall_BT3, indexOfBuildingsOverall_BT4, indexOfBuildingsOverall_BT5, week_for_testing_supervised_learning_in_simulation, pathForCreatingTheResultData_SupervisedML,objective, WeekSelectionMethod, dataScaler_InputFeatures, dataScaler_OutputLabels, trainedModel)
 
 
                         outputVectorANN_heatGenerationCoefficientSpaceHeating_BT1 = np.zeros(0)

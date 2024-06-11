@@ -41,6 +41,7 @@ def optimizeOneWeek(indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, in
     import os
     from datetime import datetime
     from time import sleep
+    import config
 
     
     
@@ -51,14 +52,14 @@ def optimizeOneWeek(indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, in
     if printLogToFile == True:
         #Specify output file for the logs
         prev_stdout = sys.stdout
-        sys.stdout = open('C:/Users/wi9632/bwSyncShare3/Eigene Arbeit/Code/Python/Demand_Side_Management/Results/log_results_Building_combined.txt', 'w')
+        sys.stdout = open(config.LOG_BUILDING_OPTIMIZATION_PROBLEM, 'w')
     
     
     
     # define the directory to be created for the result files
     currentDatetimeString = datetime.today().strftime('%d_%m_%Y_Time_%H_%M_%S')
     folderName = currentDatetimeString + "_BTCombined_" + str(SetUpScenarios.numberOfBuildings_Total) 
-    folderPath = "C:/Users/wi9632/Desktop/Ergebnisse/DSM/Instance_1/Centralized Optimization/Instance Base/" + folderName
+    folderPath = config.DIR_RESULTS_CENTRALIZED_OPTIMIZATION + folderName
     
     try:
         os.makedirs(folderPath)
@@ -85,7 +86,7 @@ def optimizeOneWeek(indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, in
     
     
     #Reading of the price data
-    df_priceData_original = pd.read_csv('C:/Users/wi9632/Desktop/Daten/DSM/Price_1Minute_Weeks/' + SetUpScenarios.typeOfPriceData +'/Price_' + SetUpScenarios.typeOfPriceData +'_1Minute_Week' + str(currentWeek) + '.csv', sep =";")
+    df_priceData_original = pd.read_csv(config.DIR_PRICE_DATA + SetUpScenarios.typeOfPriceData +'/Price_' + SetUpScenarios.typeOfPriceData +'_1Minute_Week' + str(currentWeek) + '.csv', sep =";")
     df_priceData_original['Time'] = pd.to_datetime(df_priceData_original['Time'], format = '%d.%m.%Y %H:%M')
     df_priceData = df_priceData_original.set_index('Time').resample(str(SetUpScenarios.timeResolution_InMinutes) +'Min').mean()
     arrayTimeSlots = [i for i in range (1,SetUpScenarios.numberOfTimeSlotsPerWeek + 1)]
@@ -93,7 +94,7 @@ def optimizeOneWeek(indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, in
     df_priceData = df_priceData.set_index('Timeslot')
     
     #Reading outside temperature data
-    df_outsideTemperatureData_original = pd.read_csv('C:/Users/wi9632/Desktop/Daten/DSM/Outside_Temperature_1Minute_Weeks/Outside_Temperature_1Minute_Week' + str(currentWeek) + '.csv', sep =";")
+    df_outsideTemperatureData_original = pd.read_csv(config.DIR_TEMPERATURE_DATA +'Outside_Temperature_1Minute_Week' + str(currentWeek) + '.csv', sep =";")
     df_outsideTemperatureData_original['Time'] = pd.to_datetime(df_outsideTemperatureData_original['Time'], format = '%d.%m.%Y %H:%M')
     df_outsideTemperatureData = df_outsideTemperatureData_original.set_index('Time').resample(str(SetUpScenarios.timeResolution_InMinutes) +'Min').mean()
     df_outsideTemperatureData['Timeslot'] = arrayTimeSlots
@@ -113,11 +114,11 @@ def optimizeOneWeek(indexOfBuildingsOverall_BT1, indexOfBuildingsOverall_BT2, in
     
     
     #Reading of the building data
-    list_df_buildingData_BT1_original= [pd.read_csv("C:/Users/wi9632/Desktop/Daten/DSM/BT1_mHP_EV_SFH_1Minute_Days/HH" + str(index) + "/HH" + str(index) + "_Day" + str(currentWeek) + ".csv", sep =";") for index in indexOfBuildingsOverall_BT1]
-    list_df_buildingData_BT2_original= [pd.read_csv("C:/Users/wi9632/Desktop/Daten/DSM/BT2_mHP_SFH_1Minute_Days/HH" + str(index) + "/HH" + str(index) + "_Day" + str(currentWeek) + ".csv", sep =";") for index in indexOfBuildingsOverall_BT2]
-    list_df_buildingData_BT3_original= [pd.read_csv("C:/Users/wi9632/Desktop/Daten/DSM/BT3_EV_SFH_1Minute_Days/HH" + str(index) + "/HH" + str(index) + "_Day" + str(currentWeek) + ".csv", sep =";") for index in indexOfBuildingsOverall_BT3]
-    list_df_buildingData_BT4_original= [pd.read_csv("C:/Users/wi9632/Desktop/Daten/DSM/BT4_mHP_MFH_1Minute_Weeks/HH" + str(index) + "/HH" + str(index) + "_Week" + str(currentWeek) + ".csv", sep =";") for index in indexOfBuildingsOverall_BT4]
-    list_df_buildingData_BT5_original= [pd.read_csv("C:/Users/wi9632/Desktop/Daten/DSM/BT5_BAT_SFH_1Minute_Days/HH" + str(index) + "/HH" + str(index) + "_Day" + str(currentWeek) + ".csv", sep =";") for index in indexOfBuildingsOverall_BT5]
+    list_df_buildingData_BT1_original= [pd.read_csv(config.DIR_DATA_BT1 + "HH" + str(index) + "/HH" + str(index) + "_Day" + str(currentWeek) + ".csv", sep =";") for index in indexOfBuildingsOverall_BT1]
+    list_df_buildingData_BT2_original= [pd.read_csv(config.DIR_DATA_BT2 + "HH" + str(index) + "/HH" + str(index) + "_Day" + str(currentWeek) + ".csv", sep =";") for index in indexOfBuildingsOverall_BT2]
+    list_df_buildingData_BT3_original= [pd.read_csv(config.DIR_DATA_BT3 + "HH" + str(index) + "/HH" + str(index) + "_Day" + str(currentWeek) + ".csv", sep =";") for index in indexOfBuildingsOverall_BT3]
+    list_df_buildingData_BT4_original= [pd.read_csv(config.DIR_DATA_BT4 + "HH" + str(index) + "/HH" + str(index) + "_Week" + str(currentWeek) + ".csv", sep =";") for index in indexOfBuildingsOverall_BT4]
+    list_df_buildingData_BT5_original= [pd.read_csv(config.DIR_DATA_BT5 + "HH" + str(index) + "/HH" + str(index) + "_Day" + str(currentWeek) + ".csv", sep =";") for index in indexOfBuildingsOverall_BT5]
 
 
     #Rename column 'Demand Electricity [W]' to 'Electricity [W]' if it exists

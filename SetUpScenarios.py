@@ -231,10 +231,136 @@ def calculateCOP_SingleTimeSlot(temperatureValue):
 
 
 
+####################################################
+'''
+The following methods are not used in the paper as no wind energy, PV and electric vehicles are considered in the paper
+'''
+
+# This method generates the energy consumption pattern for the EV based on its driving pattern and length of their daily rides (not used in the paper)
+def generateEVEnergyConsumptionPatterns(array_AvailabilityForTheEV, indexWithinAllEVs):
+    # Calculate length of rides for the EVs
+    if (numberOfEVsTotal > 1):
+        helpValueIncrementKMPerVehicle = maximalDeviationOfRides_km / (numberOfEVsTotal - 1)
+    else:
+        helpValueIncrementKMPerVehicle = maximalDeviationOfRides_km
+
+    for i in range(numberOfEVsTotal):
+        lengthOfRidesInKMForTheDifferentEV[
+            i] = averageLengthOfRides_km - 0.5 * maximalDeviationOfRides_km + i * helpValueIncrementKMPerVehicle
+    if numberOfEVsTotal == 1:
+        lengthOfRidesInKMForTheDifferentEV[0] = averageLengthOfRides_km
+    mixTheValuesOfAnArray(lengthOfRidesInKMForTheDifferentEV)
+    for i in range(numberOfEVsTotal):
+        totalEnergyConusumptionPerRideInJoule[i] = (lengthOfRidesInKMForTheDifferentEV[
+                                                        i] / 100) * energyConsumptionPer100km
+
+    availabilityPatternOfEV = array_AvailabilityForTheEV.copy();
+
+    # Determine number of driving time slots of the EV
+    numberOf0EntriesInTheArray = 0  # A 0-Entry in the availability dataset of the EVs means that during this time slot the EV was driving
+    for j in range(len(availabilityPatternOfEV)):
+        if availabilityPatternOfEV[j] == 0:
+            numberOf0EntriesInTheArray = numberOf0EntriesInTheArray + 1
+    numberOfDrivingTimeSlotsForTheEV = numberOf0EntriesInTheArray
+
+    # Calculate the energy consumption for every timeslot when driving (assuming a constant energy use during the rides)
+
+    constantEnergyPerTimeSlot = totalEnergyConusumptionPerRideInJoule[
+                                    indexWithinAllEVs] / numberOfDrivingTimeSlotsForTheEV
+    for j in range(len(availabilityPatternOfEV)):
+        if availabilityPatternOfEV[j] == 0:
+            energyConsumptionOfEVs_Joule[j] = constantEnergyPerTimeSlot
+        else:
+            energyConsumptionOfEVs_Joule[j] = 0
+
+    return energyConsumptionOfEVs_Joule
 
 
+# Determine the PV peak of the different buildings (not used in the paper)
 
 
+def determinePVPeakOfBuildings(indexBuildingTotal):
+    pvPeaksOfBuildings = np.zeros(numberOfBuildings_Total)
+    numberOfBuildingsWithoutPV = int(numberOfBuildings_Total * (1 - (percentageBuildingsWithPV / 100)))
+    numberOfBuildingWithPV = numberOfBuildings_Total - numberOfBuildingsWithoutPV
+
+    if (numberOfBuildingWithPV > 1):
+        helpValue_pvIncrementPerBuilding = (2 * maximalDeviationFromPVPeak) / (numberOfBuildingWithPV - 1)
+    else:
+        helpValue_pvIncrementPerBuilding = 0
+
+    for i in range(numberOfBuildingsWithoutPV):
+        pvPeaksOfBuildings[i] = 0
+    for i in range(numberOfBuildingWithPV):
+        pvPeaksOfBuildings[numberOfBuildingsWithoutPV + i] = (
+                                                                         averagePVPeak - maximalDeviationFromPVPeak) + i * helpValue_pvIncrementPerBuilding
+    if numberOfBuildingWithPV == 1:
+        pvPeaksOfBuildings[numberOfBuildingsWithoutPV] = averagePVPeak
+
+    mixTheValuesOfAnArray(pvPeaksOfBuildings)
+    pvPeaksOfBuildings = pvPeaksOfBuildings.round(0)
+
+    return pvPeaksOfBuildings[indexBuildingTotal]
+
+
+# Assign wind power to the different buildings with an equal distribution  (not used in the paper)
+
+
+# Calculate the COP of the heat pump for a single time slot
+def calculateCOP_SingleTimeSlot(temperatureValue):
+    cop_heatPump_SpaceHeating = np.zeros(numberOfTimeSlotsPerWeek)
+    cop_heatPump_DHW = np.zeros(numberOfTimeSlotsPerWeek)
+
+    temperatureDifferenceSinkSource_SpaceHeating = supplyTemperatureOfTheSpaceHeating - temperatureValue
+    temperatureDifferenceSinkSource_DHW = temperatureOfTheHotWaterInTheDHWTank - temperatureValue
+    linearEquation_slope_m = (COP_CalculationValue2_COP - COP_CalculationValue1_COP) / (
+                COP_CalculationValue2_TemperatureDifference - COP_CalculationValue1_TemperatureDifference)
+    linearEquation_intersection_c = COP_CalculationValue2_COP - linearEquation_slope_m * COP_CalculationValue2_TemperatureDifference
+    cop_heatPump_SpaceHeating = linearEquation_intersection_c + linearEquation_slope_m * temperatureDifferenceSinkSource_SpaceHeating
+    if cop_heatPump_SpaceHeating < 1:
+        cop_heatPump_SpaceHeating = 1
+    cop_heatPump_DHW = linearEquation_intersection_c + linearEquation_slope_m * temperatureDifferenceSinkSource_DHW
+    if cop_heatPump_DHW < 1:
+        cop_heatPump_DHW = 1
+
+    return cop_heatPump_SpaceHeating, cop_heatPump_DHW
+
+
+# This method mixes the values of the array lengthOfRidesInKMForTheDifferentEV and pVPeak such that there is no strong concentration of the values at the end of the array but rather the values are more equally distributed (not used in the paper)
+def mixTheValuesOfAnArray(array):
+    helpCounter = 0
+    for i in range(len(array)):
+        helpCounter = helpCounter + 1
+        if helpCounter == 2 and i < len(array) / 2:
+            helpCounter = 0
+            firstValueOfArray = array[i]
+            secondValueOfArray = array[len(array) - (i + 1)]
+            array[i] = secondValueOfArray
+            array[len(array) - (i + 1)] = firstValueOfArray
+
+
+# Assign wind power to the different buildings with an equal distribution (not used in this paper)
+def calculateAssignedWindPowerNominalPerBuilding(currentWeek, indexOfBuildingTotal):
+    windPowerAssignedNominalPerBuilding = np.zeros((numberOfBuildings_Total, numberOfTimeSlotsPerWeek))
+
+    df_windData_original = pd.read_csv(
+        'C:/Users/wi9632/Desktop/Daten/DSM/Outside_Temperature_1Minute_Weeks/Outside_Temperature_1Minute_Week' + str(
+            currentWeek) + '.csv', sep=";")
+
+    # Adjust time resolution
+    df_windData_original['Time'] = pd.to_datetime(df_windData_original['Time'], format='%d.%m.%Y %H:%M')
+    df_windData = df_windData_original.set_index('Time').resample(str(timeResolution_InMinutes) + 'Min').mean()
+    arrayTimeSlots = [i for i in range(1, numberOfTimeSlotsPerWeek + 1)]
+    df_windData['Timeslot'] = arrayTimeSlots
+    df_windData = df_windData.set_index('Timeslot')
+
+    # Equal assignment of nominal wind generation to the buildings
+    if considerWindTurbine == True:
+        for i in range(numberOfBuildings_Total):
+            for j in range(numberOfTimeSlotsPerWeek):
+                windPowerAssignedNominalPerBuilding[i][j] = df_windData['Wind [nominal]'][j] / numberOfBuildings_Total
+
+    return windPowerAssignedNominalPerBuilding[indexOfBuildingTotal]
 
 
 
