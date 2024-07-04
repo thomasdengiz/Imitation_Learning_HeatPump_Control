@@ -4,16 +4,15 @@
 ## Setup
 The code was tested with Python 3.9. In the [config file](config.py), set up the main data directory (default: "/data") and mainly the input data directory variables and files.
 
-The data can be downloaded [here](https://www.radar-service.eu/radar/en/dataset/ZxeqNfKvVlQcjQAt?token=IZoONgGpjZoiAyiHvtlT#) and the three folders (`Input_Data`, `Reinforcement_Learning`, `Results`) must be placed in the main data directory (default: inside `/data` folder)
+The data can be downloaded [here](https://radar.kit.edu/radar/en/dataset/JieKFMOeZgzCYGmh#) and the three folder `Input_Data` must be placed in the main data directory (default: inside `/data` folder)
 
 You can install the necessary packages listed in the requirements file with
 
 ```pip install -r requirements.txt```
 
-Additionally, the Gurobi solver is required for the dichotomous method and for the box method. You can also use any other solver that is compatible with the optimization framework Pyomo. No external solver is necessary for the PALSS and RELAPALSS algorithms.
-## First steps / base simulation runs
-See also the [notebook file](quick_start.ipynb) for examples of the main functions.
+Additionally, the Gurobi solver (https://www.gurobi.com/) is required for the dichotomous method and for the box method. You can also use any other solver for mixed-integer linear programming that is compatible with the optimization framework Pyomo (e.g. the free GLPK solver: https://www.gnu.org/software/glpk/). 
 
+## First steps / base simulation runs
 
 
 ### Set up variables for PALSS
@@ -71,5 +70,3 @@ Change parameters in [this file](SetUpScenarios.py) for the scenarios for the re
 - solver options
 
 
-### NSGA-II and SPEA-II
-For comparison, NSGA-II and SPEA-II have also been implemented in [this file](PymooMOEA.py). This part is independent of the proposed PALSS and RELAPALSS algorithms.
