@@ -1,5 +1,5 @@
-## If you use this code, please cite the corresponding paper:
-```Dengiz et al., “Imitation learning with artificial neural networks for demand response with a heuristic control approach for heat pumps.” ```
+## Content
+This repository contains the code for the paper “Imitation learning with artificial neural networks for demand response with a heuristic control approach for heat pumps.” by [ToDo: Add names and link]. In the paper, different machine learning approaches (multi-layer-perceptron, random forest, gradient boosting decision trees) are investigated for learning the optimal control action of a heat pump for demand response. The models learn from training data that has been genereated by exactly solving the corresponding optimization problem. The machine learning models are combined with an effective heuristic control approach that utilizes domain knowledge. The results show that integrating imitation learning approaches into a smart control method leads to significant improvements.
 
 ## Setup
 The code was tested with Python 3.9. In the [config file](config.py), set up the main data directory (default: "/data") and mainly the input data directory variables and files.
@@ -13,60 +13,8 @@ You can install the necessary packages listed in the requirements file with
 Additionally, the [Gurobi solver](https://www.gurobi.com/) is required for the optimal control method (to solve the optimization problem exactly) and to generate the training data. You can also use any other solver for mixed-integer linear programming that is compatible with the optimization framework Pyomo (e.g. the free [GLPK solver](https://www.gnu.org/software/glpk/)). 
 
 ## First steps / base simulation runs
+The main file for running the different approaches is [Run_Simulations](Run_Simulations.py). Here you can specify the different methods used for the control problem by setting the boolean variables `useCentralizedOptimization`, `useConventionalControl`, `usePriceStorageControl_BT4` and `useSupervisedLearning`. If `useSupervisedLearning` is activated, 4 different runs with a supervised learning models for imitation learning are used that first train a ML model and then use the trained model for generating the control actions. The 4 different ML methods are: 2 different multi-layer-perceptrons (with different configurations, one random forest approach and one gradient boosting decision trees approach). In the file [ML](ML.py) the different ML methods can be altered regarding their hyperparameters, training parameters, input features and output labels. The file [ICSimulation](ICSimulation.py) contains functions for executing the control actions on the simulation environment. It is called from [Run_Simulations](Run_Simulations.py). Nothing should be changed here. The file [Building_Optimization_Problem](Building_Optimization_Problem.py) contains the basic mixed-integer-linear optimization problems for different buildings types with the constraints and objective functions. It is called from [Run_Simulations](Run_Simulations.py). The file [SetUpScenarions](SetUpScenarions.py) specifies the used scenario for the simulations. Here you could alter the technical parameters of the heat pump (and possible other controllable electrical loads like electric vehicles or batteries) and different building types. However, in the paper only BT4 (multi-family building with a heat pump) is used and the training data was only generated for this building type. 
 
-
-### Set up variables for PALSS
- - In the [Run_Simulations_Combined file](Run_Simulations_Combined.py) set up the following boolean variables (directly in the file or after import):
-   - ```useCentralizedOptimization``` 
-   - ```useConventionalControl```
-     - ```useLocalSearch = True``` (default)
- - Execute the function ```run_simulations(...)``` in the [Run_Simulations_Combined file](Run_Simulations_Combined.py) with `withRL = False`
- - Further options:
-   - Set up the days. If `calculate_pareto_front_comparisons = True`, the days have to be in the list of those for which a Pareto Front was calculated. You can pass a list of days to the function.
-   - Other parameters have to be adjusted directly in the file, e.g.
-     - ```max_population_size``` (default 20)
-     - ```number_of_pareto_optimal_solutions_in_population``` 
-     - ```number_of_new_solutions_per_solution_in_iteration``` (default 3)
-     - ```number_of_iterations_local_search``` (default 12)
-     - ```time_limit_in_seconds_for_local_search``` (default 10 minutes)
-  
-### Set up variables for RELAPALSS 
-- Train the peak shift and the price shift operator
-    - Options, have to be changed in this [file](RL_Training_One_Shift_OperatorTmp.py) (all have valid default values):
-      - Set up training days (specific or random) with ```number_of_days_for_training```,```choose_days_randomly```,```days_for_training```
-      - Set up the number of iterations per day with ```number_of_iterations_per_day = 2```
-      - Set up number of new solutions per iteration and per solution with ```number_of_new_solutions_per_iteration```,```number_of_new_solutions_per_solution```
-      - Number and amount of shifting can also be modified: ```timeslots_for_state_load_percentages_obj```,```number_of_discrete_shifting_actions```,```minimum_shifting_percentage```,```maximum_shifting_percentage```
-      - Model will be saved to: ```<models_dir>/trained_PPO_model``` (default: inside ```data/Reinforcement_Learning/RL_Trained_Models```)
-    - Start training with ```ml_train_one_shift_operator(isPriceOperator = False)``` for the peak shift operator and ```ml_train_one_shift_operator(isPriceOperator = True)``` for the price shift operator.
-  
-- Set base variables
-  - Set up the correct model names directly in or after the import of the [Run_Simulations_Combined file](Run_Simulations_Combined.py) (```dir_price_shift_model```,```dir_peak_shift_model```) 
-
-  - Execute the function ```run_simulations(withRL = True)``` in the [Run_Simulations_Combined file](Run_Simulations_Combined.py) with `withRL = True`
-    - Options:
-      - Set up the days. The days should be different from those used for training. If `calculate_pareto_front_comparisons = True`, the days have to be in the list of those for which a Pareto Front was calculated. You can pass a list of days to the function.
-      - ...
-
-
-### Other optimization methods
-- In the [Run_Simulations_Combined file](Run_Simulations_Combined.py), you can also use the dichotomous method, the box method (also called epsilon-constraint method) and the conventional control. Therefore, set up the following booleans. 
-   - ```useCentralizedOptimization``` 
-   - ```useConventionalControl```
-   - ```useDichotomicMethodCentralized_Cost_Peak```
-   - ```useBoxMethodCentralized_Cost_Peak```
-   - ```useLocalSearch```
-
-- Note that the dichotomous method and the box method will require an external solver.
-
-### Additional settings
-Change parameters in [this file](SetUpScenarios.py) for the scenarios for the residential area:
-- heat pump
-- building
-- EV
-- stationary battery (not used in the paper)
-- gas boiler (not used in the paper)
-- fan heater (not used in the paper)
-- solver options
-
+## If you use this code, please cite the corresponding paper:
+```Dengiz et al., “Imitation learning with artificial neural networks for demand response with a heuristic control approach for heat pumps.” ```
 
