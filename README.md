@@ -10,7 +10,7 @@ You can install the necessary packages listed in the requirements file with
 
 ```pip install -r requirements.txt```
 
-Additionally, the Gurobi solver (https://www.gurobi.com/) is required for the dichotomous method and for the box method. You can also use any other solver for mixed-integer linear programming that is compatible with the optimization framework Pyomo (e.g. the free GLPK solver: https://www.gnu.org/software/glpk/). 
+Additionally, the [Gurobi solver](https://www.gurobi.com/) is required for the dichotomous method and for the box method. You can also use any other solver for mixed-integer linear programming that is compatible with the optimization framework Pyomo (e.g. the free [GLPK solver](https://www.gnu.org/software/glpk/)). 
 
 ## First steps / base simulation runs
 
