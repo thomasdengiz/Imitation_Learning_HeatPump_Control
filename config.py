@@ -22,9 +22,3 @@ DIR_TRAINING_DATA_BT4 = "Data/Desktop/Input_Data/Training_Data/Weeks_BT4_New/"
 #Logs
 LOG_BUILDING_OPTIMIZATION_PROBLEM = "Data/Results/log_results_building_optimization_problem.txt"
 
-
-#Not used in the paper (data for other building types)
-DIR_DATA_BT1 = "C:/Users/wi9632/Desktop/Daten/DSM/BT1_mHP_EV_SFH_1Minute_Days/"
-DIR_DATA_BT2 = "C:/Users/wi9632/Desktop/Daten/DSM/BT2_mHP_SFH_1Minute_Days/"
-DIR_DATA_BT3 = "C:/Users/wi9632/Desktop/Daten/DSM/BT3_EV_SFH_1Minute_Days/"
-DIR_DATA_BT5 = "C:/Users/wi9632/Desktop/Daten/DSM/BT5_BAT_SFH_1Minute_Days/"
