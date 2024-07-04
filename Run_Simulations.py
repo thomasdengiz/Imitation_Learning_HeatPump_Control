@@ -12,8 +12,6 @@ import config
 #Set up
 
 # Specify the used optimization methods
-
-
 useCentralizedOptimization = True
 useConventionalControl = True
 usePriceStorageControl_BT4 = True
@@ -24,7 +22,7 @@ used_trained_models_in_simulations_supervised_learning = True
 print_results_of_different_methods = True
 
 building_type_for_supervised_learning = "kWh25" #If you want to use another building cluster, also adjust the input data path for BT4 in the config file. Options are (kWh25, kWh50, kWh80)
-help_string_features_use = 'COP (Space Heating),numberOfStarts_HP,HP_isRunning,PriceFactor,StorageFactor,AverageTemperature'
+help_string_features_use = 'COP (Space Heating),numberOfStarts_HP,HP_isRunning,PriceFactor,StorageFactor,AverageTemperature' #This just specifies the features for the output file not the real features that are used in the ML application. To change that you need to adjust the list variables "MLSupvervised_input_data" and "MLSupervised_output_data" in the file ML.py
 
 
 numberOfWeeksForEvaluation = 2
