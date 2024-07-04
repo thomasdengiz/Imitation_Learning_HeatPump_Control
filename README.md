@@ -1,8 +1,8 @@
 ## If you use this code, please cite the corresponding paper:
-```Dengiz et al., “Pareto Local Search for a Multi-Objective Demand Response Problem in Residential Areas with Heat Pumps and Electric Vehicles.” ```
+```Dengiz et al., “Imitation learning with artificial neural networks for demand response with a heuristic control approach for heat pumps.” ```
 
 ## Setup
-The code was tested with Python 3.11 and 3.12. In the [config file](config.py), set up the main data directory (default: "/data") and mainly the input data directory variables and files.
+The code was tested with Python 3.9. In the [config file](config.py), set up the main data directory (default: "/data") and mainly the input data directory variables and files.
 
 The data can be downloaded [here](https://www.radar-service.eu/radar/en/dataset/ZxeqNfKvVlQcjQAt?token=IZoONgGpjZoiAyiHvtlT#) and the three folders (`Input_Data`, `Reinforcement_Learning`, `Results`) must be placed in the main data directory (default: inside `/data` folder)
 
