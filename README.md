@@ -1,5 +1,25 @@
 ## Content
-This repository contains the code for the paper “Imitation learning with artificial neural networks for demand response with a heuristic control approach for heat pumps.” by [ToDo: Add names and link]. In the paper, different machine learning approaches (multi-layer-perceptron, random forest, gradient boosting decision trees) are investigated for learning the optimal control action of a heat pump for demand response. The models learn from training data that has been genereated by exactly solving the corresponding optimization problem. The machine learning models are combined with an effective heuristic control approach that utilizes domain knowledge. The results show that integrating imitation learning approaches into a smart control method leads to significant improvements.
+This repository contains the code for the paper “Imitation learning with artificial neural networks for demand response with a heuristic control approach for heat pumps.” by [ToDo: Add names and link]. In the paper, different machine learning approaches (multi-layer-perceptron, random forest, gradient boosting decision trees) are investigated for learning the optimal control action of a heat pump for demand response with heat pumps in residential buildings. The models learn from training data that has been genereated by exactly solving the corresponding optimization problem. The machine learning models are combined with an effective heuristic control approach that utilizes domain knowledge. We also investigated the capability of the trained models to generalize by applying the trained models on data from other similar (but not identical) buildings. The results show that integrating imitation learning approaches into a smart control method leads to significant improvements. Furthermore, our study reveals that a trained model using data from a specific building can be beneficially applied to other similar buildings.
+
+<table style="border-collapse: collapse; width: 100%; table-layout: fixed;">
+  <tr>
+    <td style="text-align: center; vertical-align: top; padding-right: 40px; border: none;">
+      <img src="https://github.com/thomasdengiz/Imitation_Learning_Weeks/assets/26788796/0b39b0c5-2c9d-4880-9f45-720ee8593e61" alt="PSC_ML_Applied" width="400"/>
+      <div><em>Applying the trained model for the control problem</em></div>
+    </td>
+    <td style="text-align: center; vertical-align: top; border: none;">
+      <img src="https://github.com/thomasdengiz/Imitation_Learning_Weeks/assets/26788796/e0ac77c5-5125-44c1-a560-be45a794f349" alt="Training_with_other_buildings" width="400"/>
+      <div><em>Training process with data from other buildings</em></div>
+    </td>
+  </tr>
+</table>
+
+
+
+
+
+
+
 
 ## Setup
 The code was tested with Python 3.9. In the [config file](config.py), set up the main data directory (default: "/data") and mainly the input data directory variables and files.
