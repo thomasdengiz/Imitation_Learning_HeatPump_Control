@@ -339,28 +339,7 @@ def mixTheValuesOfAnArray(array):
             array[len(array) - (i + 1)] = firstValueOfArray
 
 
-# Assign wind power to the different buildings with an equal distribution (not used in this paper)
-def calculateAssignedWindPowerNominalPerBuilding(currentWeek, indexOfBuildingTotal):
-    windPowerAssignedNominalPerBuilding = np.zeros((numberOfBuildings_Total, numberOfTimeSlotsPerWeek))
 
-    df_windData_original = pd.read_csv(
-        'C:/Users/wi9632/Desktop/Daten/DSM/Outside_Temperature_1Minute_Weeks/Outside_Temperature_1Minute_Week' + str(
-            currentWeek) + '.csv', sep=";")
-
-    # Adjust time resolution
-    df_windData_original['Time'] = pd.to_datetime(df_windData_original['Time'], format='%d.%m.%Y %H:%M')
-    df_windData = df_windData_original.set_index('Time').resample(str(timeResolution_InMinutes) + 'Min').mean()
-    arrayTimeSlots = [i for i in range(1, numberOfTimeSlotsPerWeek + 1)]
-    df_windData['Timeslot'] = arrayTimeSlots
-    df_windData = df_windData.set_index('Timeslot')
-
-    # Equal assignment of nominal wind generation to the buildings
-    if considerWindTurbine == True:
-        for i in range(numberOfBuildings_Total):
-            for j in range(numberOfTimeSlotsPerWeek):
-                windPowerAssignedNominalPerBuilding[i][j] = df_windData['Wind [nominal]'][j] / numberOfBuildings_Total
-
-    return windPowerAssignedNominalPerBuilding[indexOfBuildingTotal]
 
 
 

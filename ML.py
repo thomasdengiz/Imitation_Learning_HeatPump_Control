@@ -673,11 +673,6 @@ def trainSupervisedML_SingleTimeslot_SingleBuildingOptScenario (trainingData, ob
         dataScaler_InputFeatures = scaler_standardized_X
         dataScaler_OutputLabels = scaler_standardized_Y
 
-        #Test print input and output data
-        MLSupvervised_input_data_file_path = r"C:\Users\wi9632\Desktop\MLSupvervised_input_data.csv"
-        MLSupervised_output_data_file_path = r"C:\Users\wi9632\Desktop\MLSupervised_output_data.csv"
-        np.savetxt(MLSupvervised_input_data_file_path, MLSupvervised_input_data, delimiter=";", fmt="%s")
-        np.savetxt(MLSupervised_output_data_file_path, MLSupervised_output_data, delimiter=";", fmt="%s")
 
 
     index_X_Train_End = int(0.7 * len(MLSupvervised_input_data))
@@ -1247,51 +1242,6 @@ def generateActionsForSingleTimeslotWithANN_SingleBuildingOptScenario (indexOfBu
         decimalsForRounding = 4
         list_df_buildingData_BT5 [index]['PV [nominal]'] = list_df_buildingData_BT5 [index]['PV [nominal]'].apply(lambda x: round(x, decimalsForRounding))
 
-
-
-
-    # Create wind power profile for BT1
-    list_windProfileNominal_BT1 = [SetUpScenarios.calculateAssignedWindPowerNominalPerBuilding (currentWeek,index_BT1) for index_BT1 in range(0, SetUpScenarios.numberOfBuildings_BT1)]
-    list_df_windPowerAssignedNominalPerBuilding_BT1 = [pd.DataFrame({'Timeslot': list_df_buildingData_BT1 [i].index, 'Wind [nominal]':list_windProfileNominal_BT1[i] }) for i in range (0, SetUpScenarios.numberOfBuildings_BT1)]
-
-    for i in range (0, len(list_df_windPowerAssignedNominalPerBuilding_BT1)):
-        del list_df_windPowerAssignedNominalPerBuilding_BT1[i]['Timeslot']
-        list_df_windPowerAssignedNominalPerBuilding_BT1[i].index +=1
-
-    # Create wind power profile for BT2
-    list_windProfileNominal_BT2 = [SetUpScenarios.calculateAssignedWindPowerNominalPerBuilding (currentWeek,SetUpScenarios.numberOfBuildings_BT1 + index_BT2) for index_BT2 in range(0, SetUpScenarios.numberOfBuildings_BT2)]
-    list_df_windPowerAssignedNominalPerBuilding_BT2 = [pd.DataFrame({'Timeslot': list_df_buildingData_BT2 [i].index, 'Wind [nominal]':list_windProfileNominal_BT2[i] }) for i in range (0, SetUpScenarios.numberOfBuildings_BT2)]
-
-    for i in range (0, len(list_df_windPowerAssignedNominalPerBuilding_BT2)):
-        del list_df_windPowerAssignedNominalPerBuilding_BT2[i]['Timeslot']
-        list_df_windPowerAssignedNominalPerBuilding_BT2[i].index +=1
-
-
-    # Create wind power profile for BT3
-    list_windProfileNominal_BT3 = [SetUpScenarios.calculateAssignedWindPowerNominalPerBuilding (currentWeek,SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + index_BT3) for index_BT3 in range(0, SetUpScenarios.numberOfBuildings_BT3)]
-    list_df_windPowerAssignedNominalPerBuilding_BT3 = [pd.DataFrame({'Timeslot': list_df_buildingData_BT3 [i].index, 'Wind [nominal]':list_windProfileNominal_BT3[i] }) for i in range (0, SetUpScenarios.numberOfBuildings_BT3)]
-
-    for i in range (0, len(list_df_windPowerAssignedNominalPerBuilding_BT3)):
-        del list_df_windPowerAssignedNominalPerBuilding_BT3[i]['Timeslot']
-        list_df_windPowerAssignedNominalPerBuilding_BT3[i].index +=1
-
-
-    # Create wind power profile for BT4
-    list_windProfileNominal_BT4 = [SetUpScenarios.calculateAssignedWindPowerNominalPerBuilding (currentWeek,SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + SetUpScenarios.numberOfBuildings_BT3 + index_BT4) for index_BT4 in range(0, SetUpScenarios.numberOfBuildings_BT4)]
-    list_df_windPowerAssignedNominalPerBuilding_BT4 = [pd.DataFrame({'Timeslot': list_df_buildingData_BT4 [i].index, 'Wind [nominal]':list_windProfileNominal_BT4[i] }) for i in range (0, SetUpScenarios.numberOfBuildings_BT4)]
-
-    for i in range (0, len(list_df_windPowerAssignedNominalPerBuilding_BT4)):
-        del list_df_windPowerAssignedNominalPerBuilding_BT4[i]['Timeslot']
-        list_df_windPowerAssignedNominalPerBuilding_BT4[i].index +=1
-
-
-    # Create wind power profile for BT5
-    list_windProfileNominal_BT5 = [SetUpScenarios.calculateAssignedWindPowerNominalPerBuilding (currentWeek,SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + SetUpScenarios.numberOfBuildings_BT3 + SetUpScenarios.numberOfBuildings_BT4  + index_BT5) for index_BT5 in range(0, SetUpScenarios.numberOfBuildings_BT5)]
-    list_df_windPowerAssignedNominalPerBuilding_BT5 = [pd.DataFrame({'Timeslot': list_df_buildingData_BT5 [i].index, 'Wind [nominal]':list_windProfileNominal_BT5[i] }) for i in range (0, SetUpScenarios.numberOfBuildings_BT5)]
-
-    for i in range (0, len(list_df_windPowerAssignedNominalPerBuilding_BT5)):
-        del list_df_windPowerAssignedNominalPerBuilding_BT5[i]['Timeslot']
-        list_df_windPowerAssignedNominalPerBuilding_BT5[i].index +=1
 
 
     #Create availability array for the EV of BT1

@@ -454,14 +454,6 @@ def simulateWeeks_WithAddtionalController_Schedule(indexOfBuildingsOverall_BT1, 
             df_energyConsumptionEV_Joule.index +=1
 
 
-            #Wind generation
-
-            indexBuildingForWindPowerAssignment = index_BT1
-            windProfileNominal = SetUpScenarios.calculateAssignedWindPowerNominalPerBuilding (currentweek,indexBuildingForWindPowerAssignment)
-            df_windPowerAssignedNominalPerBuilding = pd.DataFrame({'Timeslot': df_buildingData.index, 'Wind [nominal]':windProfileNominal })
-            del df_windPowerAssignedNominalPerBuilding['Timeslot']
-            df_windPowerAssignedNominalPerBuilding.index +=1
-
 
             # Set up inital values for the simulation
             simulationResult_BufferStorageTemperature_BT1[index_week, index_BT1, 0] = SetUpScenarios.initialBufferStorageTemperature
@@ -471,7 +463,7 @@ def simulateWeeks_WithAddtionalController_Schedule(indexOfBuildingsOverall_BT1, 
 
 
             simulationResult_PVGeneration_BT1 [index_week, index_BT1, 0] = df_buildingData ['PV [nominal]'][1]  * SetUpScenarios.determinePVPeakOfBuildings (index_BT1)
-            simulationResult_RESGeneration_BT1 [index_week, index_BT1, 0] = df_buildingData ['PV [nominal]'] [1]  * SetUpScenarios.determinePVPeakOfBuildings (index_BT1) + df_windPowerAssignedNominalPerBuilding ["Wind [nominal]"] [1] * SetUpScenarios.maximalPowerOfWindTurbine
+            simulationResult_RESGeneration_BT1 [index_week, index_BT1, 0] = df_buildingData ['PV [nominal]'] [1]  * SetUpScenarios.determinePVPeakOfBuildings (index_BT1)
             simulationResult_electricalLoad_BT1 [index_week, index_BT1, 0] = (inputVector_BT1_heatGenerationCoefficientSpaceHeating[index_BT1, 0] +  inputVector_BT1_heatGenerationCoefficientDHW[ index_BT1, 0]) * SetUpScenarios.electricalPower_HP + inputVector_BT1_chargingPowerEV[index_BT1, 0] + df_buildingData['Electricity [W]'] [1]
             simulationResult_SurplusPower_BT1 [index_week, index_BT1, 0] = simulationResult_RESGeneration_BT1 [index_week, index_BT1, 0] - simulationResult_electricalLoad_BT1 [index_week, index_BT1, 0]
             simulationResult_costs_BT1 [index_week, index_BT1, 0] = (simulationResult_electricalLoad_BT1 [index_week, index_BT1, 0] - simulationResult_PVGeneration_BT1 [index_week, index_BT1, 0]) * SetUpScenarios.timeResolution_InMinutes * 60 * (df_priceData ['Price [Cent/kWh]'] [1]/3600000)
@@ -1084,7 +1076,7 @@ def simulateWeeks_WithAddtionalController_Schedule(indexOfBuildingsOverall_BT1, 
 
 
                 simulationResult_PVGeneration_BT1 [index_week, index_BT1, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings (index_BT1)
-                simulationResult_RESGeneration_BT1 [index_week, index_BT1, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings (index_BT1) + df_windPowerAssignedNominalPerBuilding ["Wind [nominal]"] [index_timeslot + 1] * SetUpScenarios.maximalPowerOfWindTurbine
+                simulationResult_RESGeneration_BT1 [index_week, index_BT1, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings (index_BT1)
                 simulationResult_electricalLoad_BT1 [index_week, index_BT1, index_timeslot] = (outputVector_BT1_heatGenerationCoefficientSpaceHeating_corrected [index_BT1, index_timeslot] + outputVector_BT1_heatGenerationCoefficientDHW_corrected [index_BT1, index_timeslot] ) * SetUpScenarios.electricalPower_HP + outputVector_BT1_chargingPowerEV_corrected [index_BT1, index_timeslot] + df_buildingData ['Electricity [W]'] [index_timeslot + 1]
                 simulationResult_SurplusPower_BT1 [index_week, index_BT1, index_timeslot] = simulationResult_RESGeneration_BT1 [index_week, index_BT1, index_timeslot] - simulationResult_electricalLoad_BT1 [index_week, index_BT1, index_timeslot]
 
@@ -1303,19 +1295,13 @@ def simulateWeeks_WithAddtionalController_Schedule(indexOfBuildingsOverall_BT1, 
             df_outsideTemperatureData['Timeslot'] = arrayTimeSlots
             df_outsideTemperatureData = df_outsideTemperatureData.set_index('Timeslot')
 
-            #Wind generation
 
-            indexBuildingForWindPowerAssignment = SetUpScenarios.numberOfBuildings_BT1 + index_BT2
-            windProfileNominal = SetUpScenarios.calculateAssignedWindPowerNominalPerBuilding (currentweek,indexBuildingForWindPowerAssignment)
-            df_windPowerAssignedNominalPerBuilding = pd.DataFrame({'Timeslot': df_buildingData.index, 'Wind [nominal]':windProfileNominal })
-            del df_windPowerAssignedNominalPerBuilding['Timeslot']
-            df_windPowerAssignedNominalPerBuilding.index +=1
 
             # Set up inital values for the simulation
             simulationResult_BufferStorageTemperature_BT2[index_week, index_BT2, 0] = SetUpScenarios.initialBufferStorageTemperature
             simulationResult_UsableVolumeDHW_BT2[index_week, index_BT2, 0] = SetUpScenarios.initialUsableVolumeDHWTank
             simulationResult_PVGeneration_BT2 [index_week, index_BT2, 0] = df_buildingData ['PV [nominal]'] [1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + index_BT2)
-            simulationResult_RESGeneration_BT2 [index_week, index_BT2, 0] = df_buildingData ['PV [nominal]'] [1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + index_BT2)  + df_windPowerAssignedNominalPerBuilding ["Wind [nominal]"] [1]  * SetUpScenarios.maximalPowerOfWindTurbine
+            simulationResult_RESGeneration_BT2 [index_week, index_BT2, 0] = df_buildingData ['PV [nominal]'] [1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + index_BT2)
             simulationResult_electricalLoad_BT2 [index_week, index_BT2, 0] = (inputVector_BT2_heatGenerationCoefficientSpaceHeating [index_BT2, 0] +  inputVector_BT2_heatGenerationCoefficientDHW[index_BT2, 0]) * SetUpScenarios.electricalPower_HP   + df_buildingData['Electricity [W]'] [1]
             simulationResult_SurplusPower_BT2 [index_week, index_BT2, 0] = simulationResult_RESGeneration_BT2 [index_week, index_BT2, 0] - simulationResult_electricalLoad_BT2 [index_week, index_BT2, 0]
             simulationResult_costs_BT2 [index_week, index_BT2, 0] = (simulationResult_electricalLoad_BT2 [index_week, index_BT2, 0] - simulationResult_PVGeneration_BT2 [index_week, index_BT2, 0]) * SetUpScenarios.timeResolution_InMinutes * 60 * (df_priceData ['Price [Cent/kWh]'] [1]/3600000)
@@ -1863,7 +1849,7 @@ def simulateWeeks_WithAddtionalController_Schedule(indexOfBuildingsOverall_BT1, 
                     simulationResult_UsableVolumeDHW_BT2 [index_week, index_BT2, index_timeslot] = SetUpScenarios.initialUsableVolumeDHWTank + ((outputVector_BT2_heatGenerationCoefficientDHW_corrected [index_BT2, index_timeslot] * cop_heatPump_DHW[index_timeslot] *  SetUpScenarios.electricalPower_HP * SetUpScenarios.timeResolution_InMinutes * 60 - df_buildingData ['DHW [W]'] [index_timeslot + 1]  * SetUpScenarios.timeResolution_InMinutes * 60 - SetUpScenarios.standingLossesDHWTank * SetUpScenarios.timeResolution_InMinutes * 60) / (SetUpScenarios.temperatureOfTheHotWaterInTheDHWTank * SetUpScenarios.densityOfWater * SetUpScenarios.specificHeatCapacityOfWater))
 
                 simulationResult_PVGeneration_BT2 [index_week, index_BT2, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + index_BT2)
-                simulationResult_RESGeneration_BT2 [index_week, index_BT2, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + index_BT2)  + df_windPowerAssignedNominalPerBuilding ["Wind [nominal]"] [index_timeslot + 1] * SetUpScenarios.maximalPowerOfWindTurbine
+                simulationResult_RESGeneration_BT2 [index_week, index_BT2, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + index_BT2)
                 simulationResult_SurplusPower_BT2 [index_week, index_BT2, index_timeslot] = simulationResult_RESGeneration_BT2 [index_week, index_BT2, index_timeslot] - simulationResult_electricalLoad_BT2 [index_week, index_BT2, index_timeslot]
                 simulationResult_electricalLoad_BT2 [index_week, index_BT2, index_timeslot] = (outputVector_BT2_heatGenerationCoefficientSpaceHeating_corrected [index_BT2, index_timeslot] + outputVector_BT2_heatGenerationCoefficientDHW_corrected [index_BT2, index_timeslot] ) * SetUpScenarios.electricalPower_HP + df_buildingData ['Electricity [W]'] [index_timeslot + 1]
 
@@ -2079,13 +2065,6 @@ def simulateWeeks_WithAddtionalController_Schedule(indexOfBuildingsOverall_BT1, 
             df_energyConsumptionEV_Joule.index +=1
 
 
-            #Wind generation
-
-            indexBuildingForWindPowerAssignment = SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + index_BT3
-            windProfileNominal = SetUpScenarios.calculateAssignedWindPowerNominalPerBuilding (currentweek,indexBuildingForWindPowerAssignment)
-            df_windPowerAssignedNominalPerBuilding = pd.DataFrame({'Timeslot': df_buildingData.index, 'Wind [nominal]':windProfileNominal })
-            del df_windPowerAssignedNominalPerBuilding['Timeslot']
-            df_windPowerAssignedNominalPerBuilding.index +=1
 
             #Round column and rename it
             df_buildingData['Electricity [W]'] = df_buildingData['Electricity [W]'].apply(lambda x: round(x, 2))
@@ -2095,7 +2074,7 @@ def simulateWeeks_WithAddtionalController_Schedule(indexOfBuildingsOverall_BT1, 
             simulationResult_energyLevelOfEV_BT3 [index_week, index_BT3, 0]= (SetUpScenarios.initialSOC_EV/100) * SetUpScenarios.capacityMaximal_EV
             simulationResult_SOCofEV_BT3 [index_week, index_BT3, 0]= SetUpScenarios.initialSOC_EV
             simulationResult_PVGeneration_BT3 [index_week, index_BT3, 0] = df_buildingData ['PV [nominal]'] [1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + index_BT3)
-            simulationResult_RESGeneration_BT3 [index_week, index_BT3, 0] = df_buildingData ['PV [nominal]'] [1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + index_BT3)  + df_windPowerAssignedNominalPerBuilding ["Wind [nominal]"] [1] * SetUpScenarios.maximalPowerOfWindTurbine
+            simulationResult_RESGeneration_BT3 [index_week, index_BT3, 0] = df_buildingData ['PV [nominal]'] [1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + index_BT3)
             simulationResult_electricalLoad_BT3 [index_week, index_BT3, 0] =  inputVector_BT3_chargingPowerEV[index_BT3, 0] + df_buildingData['Electricity [W]'] [1]
             simulationResult_SurplusPower_BT3 [index_week, index_BT3, 0] = simulationResult_RESGeneration_BT3 [index_week, index_BT3, 0] - simulationResult_electricalLoad_BT3 [index_week, index_BT3, 0]
             simulationResult_costs_BT3 [index_week, index_BT3, 0] = (simulationResult_electricalLoad_BT3 [index_week, index_BT3, 0] - simulationResult_PVGeneration_BT3 [index_week, index_BT3, 0]) * SetUpScenarios.timeResolution_InMinutes * 60 * (df_priceData ['Price [Cent/kWh]'] [1]/3600000)
@@ -2214,7 +2193,7 @@ def simulateWeeks_WithAddtionalController_Schedule(indexOfBuildingsOverall_BT1, 
 
 
                 simulationResult_PVGeneration_BT3 [index_week, index_BT3, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + index_BT3)
-                simulationResult_RESGeneration_BT3 [index_week, index_BT3, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + index_BT3) + df_windPowerAssignedNominalPerBuilding ["Wind [nominal]"] [index_timeslot + 1] * SetUpScenarios.maximalPowerOfWindTurbine
+                simulationResult_RESGeneration_BT3 [index_week, index_BT3, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + index_BT3)
                 simulationResult_electricalLoad_BT3 [index_week, index_BT3, index_timeslot] =  outputVector_BT3_chargingPowerEV_corrected [index_BT3, index_timeslot] + df_buildingData ['Electricity [W]'] [index_timeslot + 1]
                 simulationResult_SurplusPower_BT3 [index_week, index_BT3, index_timeslot] = simulationResult_RESGeneration_BT3 [index_week, index_BT3, index_timeslot] - simulationResult_electricalLoad_BT3 [index_week, index_BT3, index_timeslot]
 
@@ -2315,17 +2294,11 @@ def simulateWeeks_WithAddtionalController_Schedule(indexOfBuildingsOverall_BT1, 
             #Round column
             df_buildingData['Electricity [W]'] = df_buildingData['Electricity [W]'].apply(lambda x: round(x, 2))
 
-            #Wind generation
-            indexBuildingForWindPowerAssignment =  SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + SetUpScenarios.numberOfBuildings_BT3 + index_BT4
-            windProfileNominal = SetUpScenarios.calculateAssignedWindPowerNominalPerBuilding (currentweek,indexBuildingForWindPowerAssignment)
-            df_windPowerAssignedNominalPerBuilding = pd.DataFrame({'Timeslot': df_buildingData.index, 'Wind [nominal]':windProfileNominal })
-            del df_windPowerAssignedNominalPerBuilding['Timeslot']
-            df_windPowerAssignedNominalPerBuilding.index +=1
 
             # Set up inital values for the simulation
             simulationResult_BufferStorageTemperature_BT4[index_week, index_BT4, 0] = SetUpScenarios.initialBufferStorageTemperature
             simulationResult_PVGeneration_BT4 [index_week, index_BT4, 0] = df_buildingData ['PV [nominal]'] [1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + SetUpScenarios.numberOfBuildings_BT3 + index_BT4)
-            simulationResult_RESGeneration_BT4 [index_week, index_BT4, 0] = df_buildingData ['PV [nominal]'] [1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + SetUpScenarios.numberOfBuildings_BT3 + index_BT4) + df_windPowerAssignedNominalPerBuilding ["Wind [nominal]"] [1]  * SetUpScenarios.maximalPowerOfWindTurbine
+            simulationResult_RESGeneration_BT4 [index_week, index_BT4, 0] = df_buildingData ['PV [nominal]'] [1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + SetUpScenarios.numberOfBuildings_BT3 + index_BT4)
             simulationResult_electricalLoad_BT4 [index_week, index_BT4, 0] = (inputVector_BT4_heatGenerationCoefficientSpaceHeating [index_BT4, 0] ) * SetUpScenarios.electricalPower_HP + df_buildingData['Electricity [W]'] [1]
             simulationResult_SurplusPower_BT4 [index_week, index_BT4, 0] = simulationResult_RESGeneration_BT4 [index_week, index_BT4, 0] - simulationResult_electricalLoad_BT4 [index_week, index_BT4, 0]
             simulationResult_costs_BT4 [index_week, index_BT4, 0] = (simulationResult_electricalLoad_BT4 [index_week, index_BT4, 0] - simulationResult_PVGeneration_BT4 [index_week, index_BT4, 0]) * SetUpScenarios.timeResolution_InMinutes * 60 * (df_priceData ['Price [Cent/kWh]'] [1]/3600000)
@@ -2593,7 +2566,7 @@ def simulateWeeks_WithAddtionalController_Schedule(indexOfBuildingsOverall_BT1, 
 
 
                 simulationResult_PVGeneration_BT4 [index_week, index_BT4, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + SetUpScenarios.numberOfBuildings_BT3 + index_BT4)
-                simulationResult_RESGeneration_BT4 [index_week, index_BT4, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + SetUpScenarios.numberOfBuildings_BT3 + index_BT4) + df_windPowerAssignedNominalPerBuilding ["Wind [nominal]"] [index_timeslot + 1] * SetUpScenarios.maximalPowerOfWindTurbine
+                simulationResult_RESGeneration_BT4 [index_week, index_BT4, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + SetUpScenarios.numberOfBuildings_BT3 + index_BT4)
                 simulationResult_SurplusPower_BT4 [index_week, index_BT4, index_timeslot] = simulationResult_RESGeneration_BT4 [index_week, index_BT4, index_timeslot] - simulationResult_electricalLoad_BT4 [index_week, index_BT4, index_timeslot]
                 simulationResult_electricalLoad_BT4 [index_week, index_BT4, index_timeslot] = (outputVector_BT4_heatGenerationCoefficientSpaceHeating_corrected [index_BT4, index_timeslot] ) * SetUpScenarios.electricalPower_HP_BT4_MFH + df_buildingData ['Electricity [W]'] [index_timeslot + 1]
 
@@ -2741,13 +2714,6 @@ def simulateWeeks_WithAddtionalController_Schedule(indexOfBuildingsOverall_BT1, 
 
 
 
-            #Wind generation
-
-            indexBuildingForWindPowerAssignment = SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + index_BT5
-            windProfileNominal = SetUpScenarios.calculateAssignedWindPowerNominalPerBuilding (currentweek,indexBuildingForWindPowerAssignment)
-            df_windPowerAssignedNominalPerBuilding = pd.DataFrame({'Timeslot': df_buildingData.index, 'Wind [nominal]':windProfileNominal })
-            del df_windPowerAssignedNominalPerBuilding['Timeslot']
-            df_windPowerAssignedNominalPerBuilding.index +=1
 
             #Round column and rename it
             df_buildingData['Electricity [W]'] = df_buildingData['Electricity [W]'].apply(lambda x: round(x, 2))
@@ -2757,7 +2723,7 @@ def simulateWeeks_WithAddtionalController_Schedule(indexOfBuildingsOverall_BT1, 
             simulationResult_energyLevelOfBAT_BT5 [index_week, index_BT5, 0]= (SetUpScenarios.initialSOC_BAT/100) * SetUpScenarios.capacityMaximal_BAT
             simulationResult_SOCofBAT_BT5 [index_week, index_BT5, 0]= SetUpScenarios.initialSOC_BAT
             simulationResult_PVGeneration_BT5 [index_week, index_BT5, 0] = df_buildingData ['PV [nominal]'] [1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + index_BT5)
-            simulationResult_RESGeneration_BT5 [index_week, index_BT5, 0] = df_buildingData ['PV [nominal]'] [1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + index_BT5)  + df_windPowerAssignedNominalPerBuilding ["Wind [nominal]"] [1] * SetUpScenarios.maximalPowerOfWindTurbine
+            simulationResult_RESGeneration_BT5 [index_week, index_BT5, 0] = df_buildingData ['PV [nominal]'] [1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + index_BT5)
             simulationResult_electricalLoad_BT5 [index_week, index_BT5, 0] =  inputVector_BT5_chargingPowerBAT[index_BT5, 0] - inputVector_BT5_disChargingPowerBAT[index_BT5, 0] + df_buildingData['Electricity [W]'] [1]
             simulationResult_SurplusPower_BT5 [index_week, index_BT5, 0] = simulationResult_RESGeneration_BT5 [index_week, index_BT5, 0] - simulationResult_electricalLoad_BT5 [index_week, index_BT5, 0]
             simulationResult_costs_BT5 [index_week, index_BT5, 0] = (simulationResult_electricalLoad_BT5 [index_week, index_BT5, 0] - simulationResult_PVGeneration_BT5 [index_week, index_BT5, 0]) * SetUpScenarios.timeResolution_InMinutes * 60 * (df_priceData ['Price [Cent/kWh]'] [1]/3600000)
@@ -2869,7 +2835,7 @@ def simulateWeeks_WithAddtionalController_Schedule(indexOfBuildingsOverall_BT1, 
 
 
                 simulationResult_PVGeneration_BT5 [index_week, index_BT5, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + index_BT5)
-                simulationResult_RESGeneration_BT5 [index_week, index_BT5, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + index_BT5) + df_windPowerAssignedNominalPerBuilding ["Wind [nominal]"] [index_timeslot + 1] * SetUpScenarios.maximalPowerOfWindTurbine
+                simulationResult_RESGeneration_BT5 [index_week, index_BT5, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + index_BT5)
                 simulationResult_electricalLoad_BT5 [index_week, index_BT5, index_timeslot] =  outputVector_BT5_chargingPowerBAT_corrected [index_BT5, index_timeslot] - outputVector_BT5_disChargingPowerBAT_corrected [index_BT5, index_timeslot] + df_buildingData ['Electricity [W]'] [index_timeslot + 1]
                 simulationResult_SurplusPower_BT5 [index_week, index_BT5, index_timeslot] = simulationResult_RESGeneration_BT5 [index_week, index_BT5, index_timeslot] - simulationResult_electricalLoad_BT5 [index_week, index_BT5, index_timeslot]
 
@@ -3770,14 +3736,6 @@ def simulateWeeks_ConventionalControl(indexOfBuildingsOverall_BT1, indexOfBuildi
             df_energyConsumptionEV_Joule.index +=1
 
 
-            #Wind generation
-
-            indexBuildingForWindPowerAssignment = index_BT1
-            windProfileNominal = SetUpScenarios.calculateAssignedWindPowerNominalPerBuilding (currentweek,indexBuildingForWindPowerAssignment)
-            df_windPowerAssignedNominalPerBuilding = pd.DataFrame({'Timeslot': df_buildingData.index, 'Wind [nominal]':windProfileNominal })
-            del df_windPowerAssignedNominalPerBuilding['Timeslot']
-            df_windPowerAssignedNominalPerBuilding.index +=1
-
             # Set up inital values for the simulation
             simulationResult_BufferStorageTemperature_BT1[index_week, index_BT1, 0] = SetUpScenarios.initialBufferStorageTemperature
             simulationResult_UsableVolumeDHW_BT1[index_week, index_BT1, 0] = SetUpScenarios.initialUsableVolumeDHWTank
@@ -3941,7 +3899,7 @@ def simulateWeeks_ConventionalControl(indexOfBuildingsOverall_BT1, indexOfBuildi
 
 
                 simulationResult_PVGeneration_BT1 [index_week, index_BT1, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings (index_BT1)
-                simulationResult_RESGeneration_BT1 [index_week, index_BT1, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings (index_BT1) + df_windPowerAssignedNominalPerBuilding ["Wind [nominal]"] [index_timeslot + 1] * SetUpScenarios.maximalPowerOfWindTurbine
+                simulationResult_RESGeneration_BT1 [index_week, index_BT1, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings (index_BT1)
 
                 simulationResult_electricalLoad_BT1 [index_week, index_BT1, index_timeslot] = ( intendedModulationDegreeForSpaceHeating/100 + intendedModulationDegreeDHW/100 ) * SetUpScenarios.electricalPower_HP + intendedPowerEVCharging + df_buildingData ['Electricity [W]'] [index_timeslot + 1]
                 simulationResult_SurplusPower_BT1 [index_week, index_BT1, index_timeslot] = simulationResult_RESGeneration_BT1 [index_week, index_BT1, index_timeslot] - simulationResult_electricalLoad_BT1 [index_week, index_BT1, index_timeslot]
@@ -4083,14 +4041,6 @@ def simulateWeeks_ConventionalControl(indexOfBuildingsOverall_BT1, indexOfBuildi
 
             cop_heatPump_SpaceHeating, cop_heatPump_DHW = SetUpScenarios.calculateCOP(df_outsideTemperatureData ["Temperature [C]"])
 
-            #Wind generation
-
-            indexBuildingForWindPowerAssignment = SetUpScenarios.numberOfBuildings_BT1 + index_BT2
-            windProfileNominal = SetUpScenarios.calculateAssignedWindPowerNominalPerBuilding (currentweek,indexBuildingForWindPowerAssignment)
-            df_windPowerAssignedNominalPerBuilding = pd.DataFrame({'Timeslot': df_buildingData.index, 'Wind [nominal]':windProfileNominal })
-            del df_windPowerAssignedNominalPerBuilding['Timeslot']
-            df_windPowerAssignedNominalPerBuilding.index +=1
-
 
             bufferStorageIsHeatedUp = False
             dhwTankIsHeatedUp = False
@@ -4222,7 +4172,7 @@ def simulateWeeks_ConventionalControl(indexOfBuildingsOverall_BT1, indexOfBuildi
 
 
                 simulationResult_PVGeneration_BT2 [index_week, index_BT2, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + index_BT2)
-                simulationResult_RESGeneration_BT2 [index_week, index_BT2, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + index_BT2) + df_windPowerAssignedNominalPerBuilding ["Wind [nominal]"] [index_timeslot + 1] * SetUpScenarios.maximalPowerOfWindTurbine
+                simulationResult_RESGeneration_BT2 [index_week, index_BT2, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + index_BT2)
 
                 simulationResult_electricalLoad_BT2 [index_week, index_BT2, index_timeslot] = ( intendedModulationDegreeForSpaceHeating/100 + intendedModulationDegreeDHW/100 ) * SetUpScenarios.electricalPower_HP + df_buildingData ['Electricity [W]'] [index_timeslot + 1]
                 simulationResult_SurplusPower_BT2 [index_week, index_BT2, index_timeslot] = simulationResult_RESGeneration_BT2 [index_week, index_BT2, index_timeslot] - simulationResult_electricalLoad_BT2 [index_week, index_BT2, index_timeslot]
@@ -4363,14 +4313,6 @@ def simulateWeeks_ConventionalControl(indexOfBuildingsOverall_BT1, indexOfBuildi
             df_energyConsumptionEV_Joule.index +=1
 
 
-            #Wind generation
-
-            indexBuildingForWindPowerAssignment = SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + index_BT3
-            windProfileNominal = SetUpScenarios.calculateAssignedWindPowerNominalPerBuilding (currentweek,indexBuildingForWindPowerAssignment)
-            df_windPowerAssignedNominalPerBuilding = pd.DataFrame({'Timeslot': df_buildingData.index, 'Wind [nominal]':windProfileNominal })
-            del df_windPowerAssignedNominalPerBuilding['Timeslot']
-            df_windPowerAssignedNominalPerBuilding.index +=1
-
             #Round column and rename it
             df_buildingData['Electricity [W]'] = df_buildingData['Electricity [W]'].apply(lambda x: round(x, 2))
 
@@ -4416,7 +4358,7 @@ def simulateWeeks_ConventionalControl(indexOfBuildingsOverall_BT1, indexOfBuildi
 
 
                 simulationResult_PVGeneration_BT3 [index_week, index_BT3, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + index_BT3)
-                simulationResult_RESGeneration_BT3 [index_week, index_BT3, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + index_BT3) + df_windPowerAssignedNominalPerBuilding ["Wind [nominal]"] [index_timeslot + 1] * SetUpScenarios.maximalPowerOfWindTurbine
+                simulationResult_RESGeneration_BT3 [index_week, index_BT3, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + index_BT3)
 
                 simulationResult_electricalLoad_BT3 [index_week, index_BT3, index_timeslot] =  intendedPowerEVCharging + df_buildingData ['Electricity [W]'] [index_timeslot + 1]
                 simulationResult_SurplusPower_BT3 [index_week, index_BT3, index_timeslot] = simulationResult_RESGeneration_BT3 [index_week, index_BT3, index_timeslot] - simulationResult_electricalLoad_BT3 [index_week, index_BT3, index_timeslot]
@@ -4498,13 +4440,6 @@ def simulateWeeks_ConventionalControl(indexOfBuildingsOverall_BT1, indexOfBuildi
 
             #Round column
             df_buildingData['Electricity [W]'] = df_buildingData['Electricity [W]'].apply(lambda x: round(x, 2))
-
-            #Wind generation
-            indexBuildingForWindPowerAssignment =  SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + SetUpScenarios.numberOfBuildings_BT3 + index_BT4
-            windProfileNominal = SetUpScenarios.calculateAssignedWindPowerNominalPerBuilding (currentweek,indexBuildingForWindPowerAssignment)
-            df_windPowerAssignedNominalPerBuilding = pd.DataFrame({'Timeslot': df_buildingData.index, 'Wind [nominal]':windProfileNominal })
-            del df_windPowerAssignedNominalPerBuilding['Timeslot']
-            df_windPowerAssignedNominalPerBuilding.index +=1
 
             cop_heatPump_SpaceHeating, cop_heatPump_DHW = SetUpScenarios.calculateCOP(df_outsideTemperatureData ["Temperature [C]"])
 
@@ -4687,7 +4622,7 @@ def simulateWeeks_ConventionalControl(indexOfBuildingsOverall_BT1, indexOfBuildi
 
 
                 simulationResult_PVGeneration_BT4 [index_week, index_BT4, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + SetUpScenarios.numberOfBuildings_BT3 + index_BT4)
-                simulationResult_RESGeneration_BT4 [index_week, index_BT4, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + SetUpScenarios.numberOfBuildings_BT3 + index_BT4) + df_windPowerAssignedNominalPerBuilding ["Wind [nominal]"] [index_timeslot + 1] * SetUpScenarios.maximalPowerOfWindTurbine
+                simulationResult_RESGeneration_BT4 [index_week, index_BT4, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + SetUpScenarios.numberOfBuildings_BT3 + index_BT4)
 
                 simulationResult_electricalLoad_BT4 [index_week, index_BT4, index_timeslot] = ( intendedModulationDegreeForSpaceHeating/100 ) * SetUpScenarios.electricalPower_HP_BT4_MFH + df_buildingData ['Electricity [W]'] [index_timeslot + 1]
                 simulationResult_SurplusPower_BT4 [index_week, index_BT4, index_timeslot] = simulationResult_RESGeneration_BT4 [index_week, index_BT4, index_timeslot] - simulationResult_electricalLoad_BT4 [index_week, index_BT4, index_timeslot]
@@ -4778,13 +4713,6 @@ def simulateWeeks_ConventionalControl(indexOfBuildingsOverall_BT1, indexOfBuildi
             df_outsideTemperatureData['Timeslot'] = arrayTimeSlots
             df_outsideTemperatureData = df_outsideTemperatureData.set_index('Timeslot')
 
-            #Wind generation
-
-            indexBuildingForWindPowerAssignment = SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + index_BT5
-            windProfileNominal = SetUpScenarios.calculateAssignedWindPowerNominalPerBuilding (currentweek,indexBuildingForWindPowerAssignment)
-            df_windPowerAssignedNominalPerBuilding = pd.DataFrame({'Timeslot': df_buildingData.index, 'Wind [nominal]':windProfileNominal })
-            del df_windPowerAssignedNominalPerBuilding['Timeslot']
-            df_windPowerAssignedNominalPerBuilding.index +=1
 
             #Round column and rename it
             df_buildingData['Electricity [W]'] = df_buildingData['Electricity [W]'].apply(lambda x: round(x, 2))
@@ -4797,7 +4725,7 @@ def simulateWeeks_ConventionalControl(indexOfBuildingsOverall_BT1, indexOfBuildi
 
                 #Assign the values for the PV generation
                 simulationResult_PVGeneration_BT5 [index_week, index_BT5, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + index_BT5)
-                simulationResult_RESGeneration_BT5 [index_week, index_BT5, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + index_BT5) + df_windPowerAssignedNominalPerBuilding ["Wind [nominal]"] [index_timeslot + 1] * SetUpScenarios.maximalPowerOfWindTurbine
+                simulationResult_RESGeneration_BT5 [index_week, index_BT5, index_timeslot] = df_buildingData ['PV [nominal]'] [index_timeslot + 1] * SetUpScenarios.determinePVPeakOfBuildings(SetUpScenarios.numberOfBuildings_BT1 + SetUpScenarios.numberOfBuildings_BT2 + index_BT5)
 
                 #Charge battery if PV generation is higher than electrical demand
                 if  df_buildingData['Electricity [W]'] [index_timeslot+1] < simulationResult_PVGeneration_BT5 [index_week, index_BT5, index_timeslot]:

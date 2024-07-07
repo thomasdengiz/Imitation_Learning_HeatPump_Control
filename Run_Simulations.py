@@ -30,14 +30,14 @@ numberOfWeeksForEvaluation = 2
 
 # Define parameters for ML
 useChronologicalOrderForFirstTestWeek = True  #specifies is the test weeks for the evaluation are choosen randomly or in a chronological order (week 1, 2, 3, 4 etc. of the year)
-number_of_iterations_ML_method = 4
+number_of_iterations_ML_method = 4 #Here the number 4 means that 4 ML methods are trained and used for the control problem: 2 Multi-layer-perceptrons, 1 random forst, 1 gradient boosting decision tree. If you change this figure, you need to rearrange the result array "resultSupervisedLearning_array" in the code accordingly
 
 
 numberOfTrainingWeeks = 20
 numberOfBuildingsForTrainingData_Overall = 1
 numberOfTestWeeks_Oveall = 5
 
-#Indexes for further building testing
+#Indexes for further building testing (here you can adjust the index of the buildings for training and testing from the same heat demand cluster. Different buildings can be evaluated for the application of a trained model with training data from other buildings)
 building_index_increment_training = 1
 building_index_increment_simulation = 0
 
