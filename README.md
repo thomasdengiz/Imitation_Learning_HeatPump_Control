@@ -36,6 +36,10 @@ Additionally, the [Gurobi solver](https://www.gurobi.com/) is required for the o
 The main file for running the different approaches is [Run_Simulations](Run_Simulations.py). Here you can specify the different methods used for the control problem by setting the boolean variables `useCentralizedOptimization`, `useConventionalControl`, `usePriceStorageControl_BT4` and `useSupervisedLearning`. If `useSupervisedLearning` is activated, 4 different runs with a supervised learning models for imitation learning are used that first train a ML model and then use the trained model for generating the control actions. The 4 different ML methods are: 2 different multi-layer-perceptrons (with different configurations, one random forest approach and one gradient boosting decision trees approach). In the file [ML](ML.py) the different ML methods can be altered regarding their hyperparameters, training parameters, input features and output labels. The file [ICSimulation](ICSimulation.py) contains functions for executing the control actions on the simulation environment. It is called from [Run_Simulations](Run_Simulations.py). Nothing should be changed here. The file [Building_Optimization_Problem](Building_Optimization_Problem.py) contains the basic mixed-integer-linear optimization problems for different buildings types with the constraints and objective functions. It is called from [Run_Simulations](Run_Simulations.py). The file [SetUpScenarions](SetUpScenarions.py) specifies the used scenario for the simulations. Here you could alter the technical parameters of the heat pump (and possible other controllable electrical loads like electric vehicles or batteries) and different building types. However, in the paper only BT4 (multi-family building with a heat pump) is used and the training data was only generated for this building type. 
 
 ## If you use this code, please cite the corresponding paper:
-```Thomas Dengiz, Max Kleinebrahm (2024): Imitation learning with artificial neural networks for demand response with a heuristic control approach for heat pumps,
-Energy and AI, Volume 18, 2024, DOI: https://doi.org/10.1016/j.egyai.2024.100441 ```
+
+**Thomas Dengiz, Max Kleinebrahm** (2024):  
+*Imitation learning with artificial neural networks for demand response with a heuristic control approach for heat pumps*,  
+_Energy and AI_, Volume 18, 2024.  
+[https://doi.org/10.1016/j.egyai.2024.100441](https://doi.org/10.1016/j.egyai.2024.100441)
+
 
